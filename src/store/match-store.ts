@@ -29,9 +29,12 @@ import type {
   Screen,
   TokenTransaction,
   TokenTxType,
+  Tournament,
+  TournamentTicket,
   Zone,
 } from "@/lib/types";
 import { RAKE_RATE_1V1 } from "@/lib/types";
+import { seedTournaments } from "@/lib/tournaments-seed";
 
 type RoomKey = "1v1" | "4v4" | "8v8" | "16v16" | "32v32";
 
@@ -66,6 +69,10 @@ interface MatchStoreState {
   matchHistory: MatchHistoryEntry[];
   /** Selected bet tier for next 1v1, or null. */
   selectedBetTier: number | null;
+  /** Upcoming/live tournaments shown in the lobby banner. */
+  tournaments: Tournament[];
+  /** Tickets the user has purchased. */
+  userTickets: TournamentTicket[];
 }
 
 interface MatchStoreActions {
@@ -83,6 +90,8 @@ interface MatchStoreActions {
   withdrawToken: (amount: number, description: string) => void;
   /** Set or clear the selected bet tier for next 1v1. */
   setBetTier: (tier: number | null) => void;
+  /** Buy ticket for tournament. Deducts entry fee + logs tx + increments ticketsSold. */
+  purchaseTicket: (tournamentId: string) => { ok: boolean; reason?: string };
   /** Lazy-init the audio context. Safe to call from any user-gesture handler. */
   initAudio: () => void;
   enterScreen: (screen: Screen) => void;
@@ -156,6 +165,8 @@ export function getInitialMatchStoreState(): MatchStoreState {
     ],
     matchHistory: [],
     selectedBetTier: 100,
+    tournaments: seedTournaments(),
+    userTickets: [],
   };
 }
 
@@ -329,6 +340,40 @@ export const useMatchStore = create<MatchStore>((set, get) => ({
   },
 
   setBetTier: (tier) => set({ selectedBetTier: tier }),
+
+  purchaseTicket: (tournamentId) => {
+    const state = get();
+    const t = state.tournaments.find((x) => x.id === tournamentId);
+    if (!t) return { ok: false, reason: "not-found" };
+    if (state.userTickets.some((x) => x.tournamentId === tournamentId)) {
+      return { ok: false, reason: "already-purchased" };
+    }
+    if (t.ticketsSold >= t.maxTickets) {
+      return { ok: false, reason: "sold-out" };
+    }
+    if (state.tokenBalance < t.entryFee) {
+      return { ok: false, reason: "insufficient-tokens" };
+    }
+    const newBalance = state.tokenBalance - t.entryFee;
+    const tx = makeTokenTx(
+      "match_entry",
+      -t.entryFee,
+      newBalance,
+      `ซื้อตั๋ว ${t.title}`,
+    );
+    set({
+      tokenBalance: newBalance,
+      tokenTransactions: [tx, ...state.tokenTransactions].slice(0, 200),
+      tournaments: state.tournaments.map((x) =>
+        x.id === tournamentId ? { ...x, ticketsSold: x.ticketsSold + 1 } : x,
+      ),
+      userTickets: [
+        { tournamentId, purchasedAt: Date.now() },
+        ...state.userTickets,
+      ],
+    });
+    return { ok: true };
+  },
 
   refundCurrent1v1Entry: () => {
     const ctx = get().currentMatchContext;

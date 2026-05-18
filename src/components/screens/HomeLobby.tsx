@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getBotById, type BotIdentity } from "@/lib/bot-identities";
 import { TIMING } from "@/lib/timing";
 import { useMatchStore } from "@/store/match-store";
+import { TournamentBanner } from "../TournamentBanner";
 
 export const HomeLobby = () => {
   const enterScreen = useMatchStore((s) => s.enterScreen);
@@ -71,6 +72,9 @@ export const HomeLobby = () => {
         </div>
         <div className="text-white/30 text-xl">⚙️</div>
       </motion.button>
+
+      {/* Tournament banner */}
+      <TournamentBanner />
 
       {/* Quick actions: wallet + history */}
       <div className="grid grid-cols-2 gap-3 -mt-1">

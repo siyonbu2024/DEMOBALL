@@ -236,3 +236,42 @@ export const TOKEN_PACKAGES: readonly TokenPackage[] = [
   { id: "gold",     tokens: 3000,  bonus: 700,  priceThb: 799 },
   { id: "platinum", tokens: 8000,  bonus: 2500, priceThb: 1999 },
 ];
+
+// ────────────────────────────────────────────────────────────────────────
+// Tournaments
+// ────────────────────────────────────────────────────────────────────────
+
+/** Tournament-specific rake (higher than regular rooms because prizes are bigger). */
+export const TOURNAMENT_RAKE_RATE = 0.25;
+
+export type TournamentStatus = "scheduled" | "registration" | "live" | "ended";
+
+export interface Tournament {
+  id: string;
+  title: string;
+  subtitle: string;
+  size: 4 | 8 | 16 | 32 | 64;
+  /** Token cost per ticket. */
+  entryFee: number;
+  /** Wall-clock ms when bracket starts. */
+  scheduledStart: number;
+  /** Cosmetic ceiling. */
+  maxTickets: number;
+  /** Cosmetic count for now — also bumped when user buys. */
+  ticketsSold: number;
+  status: TournamentStatus;
+  /** Hero gradient (Tailwind class fragments). */
+  gradient: string;
+  /** Accent ring + badge color. */
+  accent: string;
+  /** Emoji header icon. */
+  icon: string;
+  /** Tag shown in corner (MEGA/GRAND/ULTRA etc). */
+  tag: string;
+  tagColor: string;
+}
+
+export interface TournamentTicket {
+  tournamentId: string;
+  purchasedAt: number;
+}
