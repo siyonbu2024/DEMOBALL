@@ -76,7 +76,7 @@ export const Room1v1 = () => {
       </header>
 
       {/* Bet tier picker */}
-      <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-950/40 border border-emerald-400/25 rounded-xl p-3">
+      <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-950/40 border border-emerald-400/25 rounded-md p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="text-[10px] uppercase tracking-[0.3em] text-emerald-300 font-bold">
             เลือกเดิมพัน
@@ -150,7 +150,7 @@ export const Room1v1 = () => {
           return (
             <div
               key={bot.id}
-              className={`flex items-center gap-3 p-3 bg-white/5 rounded-xl ${
+              className={`flex items-center gap-3 p-3 bg-white/5 rounded-md ${
                 busy ? "opacity-50" : ""
               }`}
             >

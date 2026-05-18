@@ -267,7 +267,7 @@ function MatchCard({
           : { boxShadow: "0 0 0 0px rgba(0,0,0,0)" }
       }
       transition={{ duration: 0.3 }}
-      className="bg-white/5 rounded-xl p-2.5"
+      className="bg-white/5 rounded-md p-2.5"
     >
       <PlayerRow
         slot={slot1}
@@ -469,7 +469,7 @@ function ChampionView({
               <div className="text-xs uppercase tracking-widest text-white/60">
                 แชมป์
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-xl">
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-md">
                 <span className="text-2xl">{champion.identity.avatar}</span>
                 <span className="font-bold text-amber-200">
                   {champion.identity.username}

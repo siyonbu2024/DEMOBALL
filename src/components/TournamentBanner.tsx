@@ -82,7 +82,7 @@ function TournamentCard({
     <motion.button
       onClick={onTap}
       whileTap={{ scale: 0.97 }}
-      className={`relative shrink-0 w-[280px] snap-start text-left rounded-2xl overflow-hidden bg-gradient-to-br ${t.gradient} border ${t.accent} shadow-xl`}
+      className={`relative shrink-0 w-[280px] snap-start text-left rounded-md overflow-hidden bg-gradient-to-br ${t.gradient} border ${t.accent} shadow-xl`}
     >
       {/* Sheen */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
@@ -186,6 +186,19 @@ function TournamentCard({
 }
 
 function Countdown({ countdown }: { countdown: CountdownParts }) {
+  // Skip SSR — countdown values depend on Date.now() and would mismatch
+  // between server and client. Render a placeholder until mounted.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) {
+    return (
+      <div className="flex items-baseline gap-1.5 tabular-nums">
+        <TimeChunk value={0} label="ชม." />
+        <TimeChunk value={0} label="นาที" />
+        <TimeChunk value={0} label="วิ" />
+      </div>
+    );
+  }
   if (countdown.expired) {
     return (
       <div className="text-rose-300 font-black text-base tracking-tight">
@@ -226,9 +239,13 @@ interface CountdownParts {
 }
 
 function useCountdown(target: number): CountdownParts {
-  const [now, setNow] = useState(() => Date.now());
+  // Start at target itself so SSR and the first client render produce the
+  // same {0, 0, 0, 0} state. The interval below kicks in on mount and
+  // replaces it with the real countdown.
+  const [now, setNow] = useState(target);
 
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);

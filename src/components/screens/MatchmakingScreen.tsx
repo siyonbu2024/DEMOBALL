@@ -100,7 +100,7 @@ export const MatchmakingScreen = () => {
                 transition={{ delay: opponentRevealDelaySec, type: "spring", stiffness: 260, damping: 22 }}
                 className="flex flex-col items-center gap-2 flex-1"
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-emerald-900/60 border border-emerald-500/40 flex items-center justify-center text-3xl shadow-lg shadow-emerald-900/50">
+                <div className="w-16 h-16 rounded-md bg-gradient-to-br from-emerald-500/30 to-emerald-900/60 border border-emerald-500/40 flex items-center justify-center text-3xl shadow-lg shadow-emerald-900/50">
                   {userIdentity.avatar}
                 </div>
                 <div className="text-white font-black text-sm text-center leading-tight">
@@ -134,7 +134,7 @@ export const MatchmakingScreen = () => {
                 transition={{ delay: opponentRevealDelaySec, type: "spring", stiffness: 260, damping: 22 }}
                 className="flex flex-col items-center gap-2 flex-1"
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500/30 to-red-900/60 border border-red-500/40 flex items-center justify-center text-3xl shadow-lg shadow-red-900/50">
+                <div className="w-16 h-16 rounded-md bg-gradient-to-br from-red-500/30 to-red-900/60 border border-red-500/40 flex items-center justify-center text-3xl shadow-lg shadow-red-900/50">
                   {opponent.identity.avatar}
                 </div>
                 <div className="text-white font-black text-sm text-center leading-tight flex items-center gap-1">
@@ -154,7 +154,7 @@ export const MatchmakingScreen = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: opponentRevealDelaySec + 0.2 }}
-              className="w-full py-2 rounded-xl bg-gradient-to-r from-red-700/50 via-red-600/60 to-red-700/50 border border-red-500/30 text-center"
+              className="w-full py-2 rounded-md bg-gradient-to-r from-red-700/50 via-red-600/60 to-red-700/50 border border-red-500/30 text-center"
             >
               <div className="text-white font-black text-sm tracking-widest uppercase">
                 ⚽ Match Starting ⚽

@@ -26,8 +26,8 @@ export const MatchScreen = () => {
   const currentScreen = useMatchStore((s) => s.currentScreen);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center bg-emerald-950 font-sans">
-      <main className="w-full max-w-sm flex-1 flex flex-col bg-emerald-900 text-white relative overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col items-center font-sans" style={{ backgroundColor: "#15141f" }}>
+      <main className="w-full max-w-sm flex-1 flex flex-col text-white relative overflow-hidden" style={{ backgroundColor: "#1E1D30" }}>
         <MuteToggle />
         <AnimatePresence mode="wait">
           <motion.div

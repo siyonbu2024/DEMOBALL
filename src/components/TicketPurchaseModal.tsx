@@ -68,7 +68,7 @@ export const TicketPurchaseModal = ({ tournament: t, owned, onClose }: Props) =>
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 320, damping: 32 }}
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-sm bg-gradient-to-b ${t.gradient} border-t-2 ${t.accent} rounded-t-3xl shadow-2xl overflow-hidden`}
+        className={`w-full max-w-sm bg-gradient-to-b ${t.gradient} border-t-2 ${t.accent} rounded-t-md shadow-2xl overflow-hidden`}
       >
         {/* Grab handle */}
         <div className="flex justify-center pt-2 pb-1">
@@ -98,7 +98,7 @@ export const TicketPurchaseModal = ({ tournament: t, owned, onClose }: Props) =>
           </div>
 
           {/* Schedule */}
-          <div className="bg-black/30 rounded-xl p-3 mb-3 backdrop-blur">
+          <div className="bg-black/30 rounded-md p-3 mb-3 backdrop-blur">
             <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-1">
               กำหนดเริ่มแข่ง
             </div>
@@ -129,7 +129,7 @@ export const TicketPurchaseModal = ({ tournament: t, owned, onClose }: Props) =>
           </div>
 
           {/* Prize distribution */}
-          <div className="bg-black/30 rounded-xl p-3 mb-3 backdrop-blur">
+          <div className="bg-black/30 rounded-md p-3 mb-3 backdrop-blur">
             <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-2">
               การแบ่งรางวัล (โดยประมาณ)
             </div>
@@ -151,7 +151,7 @@ export const TicketPurchaseModal = ({ tournament: t, owned, onClose }: Props) =>
           </div>
 
           {/* Rules */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-4">
+          <div className="bg-white/5 border border-white/10 rounded-md p-3 mb-4">
             <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-2">
               กติกาสั้นๆ
             </div>

@@ -76,7 +76,7 @@ export const MatchEnd = () => {
             damping: 18,
             delay: (TIMING.matchEndScoreReveal + 300) / 1000,
           }}
-          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-md border ${
             youWin
               ? "bg-emerald-500/15 border-emerald-400/40"
               : "bg-rose-500/15 border-rose-400/40"
@@ -225,7 +225,7 @@ function ShareButton() {
       </GameButton>
       {copied && (
         <div className="fixed inset-x-0 bottom-8 flex justify-center pointer-events-none z-50">
-          <div className="px-5 py-3 bg-black/80 text-white rounded-xl text-sm shadow-lg">
+          <div className="px-5 py-3 bg-black/80 text-white rounded-md text-sm shadow-lg">
             คัดลอกลิงก์แล้ว
           </div>
         </div>

@@ -85,7 +85,7 @@ export const RoomBracket = ({ size, title, subtitle, bucket }: Props) => {
           return (
             <div
               key={bot.id}
-              className={`flex items-center gap-3 p-3 bg-white/5 rounded-xl ${
+              className={`flex items-center gap-3 p-3 bg-white/5 rounded-md ${
                 busy ? "opacity-50" : ""
               }`}
             >

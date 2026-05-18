@@ -72,7 +72,7 @@ export const WalletScreen = () => {
         initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 320, damping: 22 }}
-        className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-amber-500 via-amber-600 to-orange-700 border border-amber-300/40 shadow-xl shadow-amber-900/40 mb-4"
+        className="relative overflow-hidden rounded-md p-5 bg-gradient-to-br from-amber-500 via-amber-600 to-orange-700 border border-amber-300/40 shadow-xl shadow-amber-900/40 mb-4"
       >
         <div className="absolute inset-0 opacity-20 bg-gradient-to-tr from-yellow-300 to-transparent" />
         <div className="relative">
@@ -93,7 +93,7 @@ export const WalletScreen = () => {
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-black/30 rounded-xl mb-4">
+      <div className="flex gap-1 p-1 bg-black/30 rounded-md mb-4">
         <TabBtn active={tab === "deposit"} onClick={() => setTab("deposit")} label="เติม" />
         <TabBtn active={tab === "withdraw"} onClick={() => setTab("withdraw")} label="ถอน" />
         <TabBtn active={tab === "history"} onClick={() => setTab("history")} label="ประวัติ" />
@@ -113,7 +113,7 @@ export const WalletScreen = () => {
 
       {tab === "withdraw" && (
         <div className="flex flex-col gap-3">
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+          <div className="p-4 rounded-md bg-white/5 border border-white/10">
             <label className="text-xs text-white/60 mb-2 block">จำนวน Token ที่ต้องการถอน</label>
             <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-2 mb-3">
               <span className="text-amber-300 text-xl">🪙</span>
@@ -156,7 +156,7 @@ export const WalletScreen = () => {
           animate={{ opacity: 1, y: 0 }}
           className="fixed inset-x-0 bottom-8 flex justify-center pointer-events-none z-50"
         >
-          <div className="px-5 py-3 bg-black/85 text-white rounded-xl text-sm shadow-2xl border border-white/10">
+          <div className="px-5 py-3 bg-black/85 text-white rounded-md text-sm shadow-2xl border border-white/10">
             {toast}
           </div>
         </motion.div>
@@ -194,7 +194,7 @@ function PackageCard({ pkg, onBuy }: { pkg: TokenPackage; onBuy: () => void }) {
     <motion.button
       whileTap={{ scale: 0.98 }}
       onClick={onBuy}
-      className={`relative flex items-center gap-3 p-3 rounded-xl text-left transition overflow-hidden ${
+      className={`relative flex items-center gap-3 p-3 rounded-md text-left transition overflow-hidden ${
         pkg.highlight
           ? "bg-gradient-to-r from-emerald-900/80 to-emerald-950/80 border border-emerald-400/50 shadow-lg shadow-emerald-900/40"
           : "bg-white/5 border border-white/10"

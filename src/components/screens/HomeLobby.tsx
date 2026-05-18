@@ -28,7 +28,7 @@ export const HomeLobby = () => {
   return (
     <div className="flex flex-col gap-4 px-4 py-5">
       {/* Hero banner */}
-      <div className="relative rounded-2xl overflow-hidden">
+      <div className="relative rounded-md overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f0a] via-[#0e2a10] to-[#061206]" />
         <div
           className="absolute inset-0 opacity-15 bg-cover bg-center"
@@ -58,7 +58,7 @@ export const HomeLobby = () => {
       <motion.button
         onClick={() => enterScreen("settings")}
         whileTap={{ scale: 0.98 }}
-        className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-white/10 to-white/5 border border-white/10 text-left active:bg-white/10 transition"
+        className="flex items-center gap-3 p-3 rounded-md bg-gradient-to-r from-white/10 to-white/5 border border-white/10 text-left active:bg-white/10 transition"
       >
         <div className="relative">
           <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-800 flex items-center justify-center text-xl ring-2 ring-emerald-400/60 shadow-lg shadow-emerald-900/50">
@@ -81,7 +81,7 @@ export const HomeLobby = () => {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => enterScreen("wallet")}
-          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-xl bg-gradient-to-br from-amber-600/80 to-orange-800/80 border border-amber-400/40 text-left shadow-lg shadow-amber-900/30"
+          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-md bg-gradient-to-br from-amber-600/80 to-orange-800/80 border border-amber-400/40 text-left shadow-lg shadow-amber-900/30"
         >
           <div className="text-2xl">🪙</div>
           <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export const HomeLobby = () => {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => enterScreen("match-history")}
-          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-xl bg-gradient-to-br from-slate-600/80 to-slate-800/80 border border-white/15 text-left shadow-lg"
+          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-md bg-gradient-to-br from-slate-600/80 to-slate-800/80 border border-white/15 text-left shadow-lg"
         >
           <div className="text-2xl">📊</div>
           <div className="flex-1 min-w-0">
@@ -239,13 +239,13 @@ function RoomCard({
     <motion.button
       onClick={onTap}
       whileTap={{ scale: 0.97 }}
-      className={`relative flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r ${gradient} border ${accent} shadow-lg ${glow} text-left overflow-hidden transition`}
+      className={`relative flex items-center gap-3 p-4 rounded-md bg-gradient-to-r ${gradient} border ${accent} shadow-lg ${glow} text-left overflow-hidden transition`}
     >
       {/* Subtle sheen */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
       {/* Icon badge */}
-      <div className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl bg-black/30 shrink-0">
+      <div className="text-2xl w-11 h-11 flex items-center justify-center rounded-md bg-black/30 shrink-0">
         {icon}
       </div>
 
@@ -296,10 +296,10 @@ function TourCard() {
       <motion.button
         onClick={() => setToast(true)}
         whileTap={{ scale: 0.97 }}
-        className="relative flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-amber-900/30 to-amber-950/30 border border-amber-500/20 text-left opacity-60 overflow-hidden"
+        className="relative flex items-center gap-3 p-4 rounded-md bg-gradient-to-r from-amber-900/30 to-amber-950/30 border border-amber-500/20 text-left opacity-60 overflow-hidden"
       >
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <div className="text-2xl w-11 h-11 flex items-center justify-center rounded-xl bg-black/30 shrink-0">
+        <div className="text-2xl w-11 h-11 flex items-center justify-center rounded-md bg-black/30 shrink-0">
           🏅
         </div>
         <div className="flex-1 min-w-0">
@@ -315,7 +315,7 @@ function TourCard() {
 
       {toast && (
         <div className="fixed inset-x-0 bottom-8 flex justify-center pointer-events-none z-50">
-          <div className="px-5 py-3 bg-black/80 text-white rounded-xl text-sm shadow-lg border border-white/10">
+          <div className="px-5 py-3 bg-black/80 text-white rounded-md text-sm shadow-lg border border-white/10">
             ทัวร์นาเมนต์จะเปิดเร็วๆ นี้
           </div>
         </div>

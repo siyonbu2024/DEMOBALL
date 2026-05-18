@@ -52,7 +52,7 @@ export const MatchHistoryScreen = () => {
 
       {/* Net tokens card */}
       <div
-        className={`p-3 rounded-xl mb-4 border ${
+        className={`p-3 rounded-md mb-4 border ${
           stats.netTokens >= 0
             ? "bg-emerald-500/10 border-emerald-400/30"
             : "bg-rose-500/10 border-rose-400/30"
@@ -74,7 +74,7 @@ export const MatchHistoryScreen = () => {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 p-1 bg-black/30 rounded-xl mb-4">
+      <div className="flex gap-1 p-1 bg-black/30 rounded-md mb-4">
         <FilterTab active={filter === "all"} onClick={() => setFilter("all")} label="ทั้งหมด" />
         <FilterTab active={filter === "win"} onClick={() => setFilter("win")} label="ชนะ" />
         <FilterTab active={filter === "loss"} onClick={() => setFilter("loss")} label="แพ้" />
@@ -115,7 +115,7 @@ function StatBox({
   accent: string;
 }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl px-2 py-2.5 text-center">
+    <div className="bg-white/5 border border-white/10 rounded-md px-2 py-2.5 text-center">
       <div className={`text-lg font-black tabular-nums leading-tight ${accent}`}>{value}</div>
       <div className="text-[9px] uppercase tracking-widest text-white/40 font-bold">
         {label}
@@ -154,7 +154,7 @@ function MatchRow({ match, index }: { match: MatchHistoryEntry; index: number })
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.03, 0.3) }}
-      className={`flex items-center gap-3 p-3 rounded-xl border ${
+      className={`flex items-center gap-3 p-3 rounded-md border ${
         isWin
           ? "bg-emerald-500/10 border-emerald-400/25"
           : "bg-rose-500/10 border-rose-400/25"
