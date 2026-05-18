@@ -18,6 +18,9 @@ import { Room4v4 } from "./screens/Room4v4";
 import { Room8v8 } from "./screens/Room8v8";
 import { Room16v16 } from "./screens/Room16v16";
 import { Room32v32 } from "./screens/Room32v32";
+import { WalletScreen } from "./screens/WalletScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
+import { MatchHistoryScreen } from "./screens/MatchHistoryScreen";
 
 export const MatchScreen = () => {
   const currentScreen = useMatchStore((s) => s.currentScreen);
@@ -63,6 +66,12 @@ function renderScreen(screen: Screen) {
       return <BracketView />;
     case "in-match":
       return <InMatchView />;
+    case "wallet":
+      return <WalletScreen />;
+    case "settings":
+      return <SettingsScreen />;
+    case "match-history":
+      return <MatchHistoryScreen />;
   }
 }
 

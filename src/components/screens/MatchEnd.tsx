@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { play } from "@/lib/sound";
 import { TIMING } from "@/lib/timing";
 import { GameButton } from "@/components/GameButton";
+import { RAKE_RATE_1V1 } from "@/lib/types";
 import { useMatchStore } from "@/store/match-store";
 
 export const MatchEnd = () => {
@@ -23,6 +24,12 @@ export const MatchEnd = () => {
   const isOneVone =
     ctx?.type === "quick-1v1" || ctx?.type === "specific-1v1";
   const isBracket = ctx?.type === "bracket";
+
+  const has1v1Bet = isOneVone && ctx && "entryFee" in ctx && ctx.entryFee > 0;
+  const entryFee = has1v1Bet && ctx && "entryFee" in ctx ? ctx.entryFee : 0;
+  const pot = has1v1Bet && ctx && "pot" in ctx ? ctx.pot : 0;
+  const prize = has1v1Bet ? pot - Math.floor(pot * RAKE_RATE_1V1) : 0;
+  const tokenDelta = youWin ? prize - entryFee : -entryFee;
 
   return (
     <div className="flex flex-col items-center flex-1 gap-5 px-5 py-6 text-center overflow-y-auto">
@@ -58,6 +65,50 @@ export const MatchEnd = () => {
           {opponent?.identity.avatar} {opponent?.identity.username}
         </span>
       </motion.div>
+
+      {has1v1Bet && (
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 320,
+            damping: 18,
+            delay: (TIMING.matchEndScoreReveal + 300) / 1000,
+          }}
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border ${
+            youWin
+              ? "bg-emerald-500/15 border-emerald-400/40"
+              : "bg-rose-500/15 border-rose-400/40"
+          }`}
+        >
+          <span className="text-2xl">🪙</span>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-widest text-white/60 font-bold leading-tight">
+              {youWin ? "Token ที่ได้รับ" : "Token ที่เสีย"}
+            </div>
+            <div
+              className={`text-xl font-black tabular-nums leading-tight ${
+                tokenDelta > 0
+                  ? "text-emerald-300"
+                  : tokenDelta < 0
+                  ? "text-rose-300"
+                  : "text-white"
+              }`}
+            >
+              {tokenDelta > 0 ? "+" : ""}
+              {tokenDelta.toLocaleString()}
+            </div>
+          </div>
+          {youWin && (
+            <div className="text-[10px] text-white/40 ml-1 leading-tight">
+              pot {pot}
+              <br />
+              -rake {Math.floor(pot * RAKE_RATE_1V1)}
+            </div>
+          )}
+        </motion.div>
+      )}
 
       <RoundSummary />
 

@@ -143,7 +143,10 @@ export type Screen =
   | "room-32v32"
   | "matchmaking"
   | "bracket-view"
-  | "in-match";
+  | "in-match"
+  | "wallet"
+  | "settings"
+  | "match-history";
 
 export interface BracketSlot {
   identity: BotIdentity;
@@ -173,6 +176,63 @@ export interface BracketState {
 
 /** Where a match was started from — used by match-end to route the user back. */
 export type MatchContext =
-  | { type: "quick-1v1" }
-  | { type: "specific-1v1"; opponentBotId: string }
+  | { type: "quick-1v1"; entryFee: number; pot: number }
+  | { type: "specific-1v1"; opponentBotId: string; entryFee: number; pot: number }
   | { type: "bracket"; size: 4 | 8 | 16 | 32; bracketRoundIndex: number };
+
+// ────────────────────────────────────────────────────────────────────────
+// Token / wallet
+// ────────────────────────────────────────────────────────────────────────
+
+/** Available bet tiers for 1v1 matches (in tokens). */
+export const BET_TIERS: readonly number[] = [10, 50, 100, 500, 1000] as const;
+
+/** 1v1 rake taken by the house (20%). */
+export const RAKE_RATE_1V1 = 0.2;
+
+export type TokenTxType =
+  | "deposit"        // bought package
+  | "withdraw"       // withdrew to bank
+  | "match_entry"    // deducted to join match
+  | "match_win"      // received as prize
+  | "refund"         // refunded due to cancel
+  | "promo";         // free bonus
+
+export interface TokenTransaction {
+  id: string;
+  type: TokenTxType;
+  amount: number;        // positive = credit, negative = debit
+  balanceAfter: number;
+  description: string;
+  timestamp: number;
+}
+
+export interface MatchHistoryEntry {
+  id: string;
+  type: "1v1" | "bracket-4" | "bracket-8" | "bracket-16" | "bracket-32";
+  opponentName: string;
+  opponentAvatar: string;
+  result: "win" | "loss";
+  scoreYou: number;
+  scoreOpp: number;
+  entryFee: number;
+  prize: number;          // 0 if loss
+  netTokens: number;      // prize - entryFee
+  timestamp: number;
+}
+
+export interface TokenPackage {
+  id: string;
+  tokens: number;
+  bonus: number;
+  priceThb: number;
+  highlight?: boolean;
+}
+
+export const TOKEN_PACKAGES: readonly TokenPackage[] = [
+  { id: "starter",  tokens: 100,   bonus: 0,    priceThb: 35 },
+  { id: "bronze",   tokens: 500,   bonus: 50,   priceThb: 149 },
+  { id: "silver",   tokens: 1200,  bonus: 200,  priceThb: 349, highlight: true },
+  { id: "gold",     tokens: 3000,  bonus: 700,  priceThb: 799 },
+  { id: "platinum", tokens: 8000,  bonus: 2500, priceThb: 1999 },
+];

@@ -24,10 +24,14 @@ import type {
   BracketState,
   GamePhase,
   MatchContext,
+  MatchHistoryEntry,
   MatchState,
   Screen,
+  TokenTransaction,
+  TokenTxType,
   Zone,
 } from "@/lib/types";
+import { RAKE_RATE_1V1 } from "@/lib/types";
 
 type RoomKey = "1v1" | "4v4" | "8v8" | "16v16" | "32v32";
 
@@ -52,11 +56,33 @@ interface MatchStoreState {
   roomAssignments: Record<RoomKey, string[]>;
   /** Sound mute toggle. */
   isMuted: boolean;
+  /** Haptic vibration toggle. */
+  vibrationEnabled: boolean;
+  /** Persistent token wallet (demo: starts at 1000). */
+  tokenBalance: number;
+  /** Immutable token transaction ledger (newest first). */
+  tokenTransactions: TokenTransaction[];
+  /** Past match results (newest first). */
+  matchHistory: MatchHistoryEntry[];
+  /** Selected bet tier for next 1v1, or null. */
+  selectedBetTier: number | null;
 }
 
 interface MatchStoreActions {
   /** Toggle sound mute. Also stops any in-flight sounds when set to true. */
   toggleMute: () => void;
+  /** Toggle haptic vibration. */
+  toggleVibration: () => void;
+  /** Update display name (capped at 16 chars). */
+  setUsername: (name: string) => void;
+  /** Update avatar emoji. */
+  setAvatar: (avatar: string) => void;
+  /** Add token from a package purchase. Logs transaction. */
+  depositToken: (amount: number, description: string) => void;
+  /** Withdraw token (demo: just logs, no real payout). */
+  withdrawToken: (amount: number, description: string) => void;
+  /** Set or clear the selected bet tier for next 1v1. */
+  setBetTier: (tier: number | null) => void;
   /** Lazy-init the audio context. Safe to call from any user-gesture handler. */
   initAudio: () => void;
   enterScreen: (screen: Screen) => void;
@@ -66,6 +92,8 @@ interface MatchStoreActions {
   driftRoomAssignments: () => void;
   startQuickMatch1v1: () => void;
   startSpecificMatch1v1: (botId: string) => void;
+  /** Mock no-op for explicit refund flows (e.g. cancel matchmaking). */
+  refundCurrent1v1Entry: () => void;
   startBracket: (size: 4 | 8 | 16 | 32) => void;
   /** matchmaking → in-match. Called by MatchmakingScreen after its anticipation window. */
   finishMatchmaking: () => void;
@@ -114,6 +142,36 @@ export function getInitialMatchStoreState(): MatchStoreState {
     pendingKeeperChoice: null,
     roomAssignments: { "1v1": [], "4v4": [], "8v8": [], "16v16": [], "32v32": [] },
     isMuted: false,
+    vibrationEnabled: true,
+    tokenBalance: 1000,
+    tokenTransactions: [
+      {
+        id: "seed-1",
+        type: "promo",
+        amount: 1000,
+        balanceAfter: 1000,
+        description: "เครดิตเริ่มต้น (demo)",
+        timestamp: Date.now(),
+      },
+    ],
+    matchHistory: [],
+    selectedBetTier: 100,
+  };
+}
+
+function makeTokenTx(
+  type: TokenTxType,
+  amount: number,
+  balanceAfter: number,
+  description: string,
+): TokenTransaction {
+  return {
+    id: `tx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    amount,
+    balanceAfter,
+    description,
+    timestamp: Date.now(),
   };
 }
 
@@ -238,6 +296,52 @@ export const useMatchStore = create<MatchStore>((set, get) => ({
     set({ isMuted: next });
   },
 
+  toggleVibration: () => set({ vibrationEnabled: !get().vibrationEnabled }),
+
+  setUsername: (name) => {
+    const trimmed = name.trim().slice(0, 16) || "คุณ";
+    set({ userIdentity: { ...get().userIdentity, username: trimmed } });
+  },
+
+  setAvatar: (avatar) => {
+    set({ userIdentity: { ...get().userIdentity, avatar } });
+  },
+
+  depositToken: (amount, description) => {
+    if (amount <= 0) return;
+    const newBalance = get().tokenBalance + amount;
+    const tx = makeTokenTx("deposit", amount, newBalance, description);
+    set({
+      tokenBalance: newBalance,
+      tokenTransactions: [tx, ...get().tokenTransactions].slice(0, 200),
+    });
+  },
+
+  withdrawToken: (amount, description) => {
+    if (amount <= 0) return;
+    if (amount > get().tokenBalance) return;
+    const newBalance = get().tokenBalance - amount;
+    const tx = makeTokenTx("withdraw", -amount, newBalance, description);
+    set({
+      tokenBalance: newBalance,
+      tokenTransactions: [tx, ...get().tokenTransactions].slice(0, 200),
+    });
+  },
+
+  setBetTier: (tier) => set({ selectedBetTier: tier }),
+
+  refundCurrent1v1Entry: () => {
+    const ctx = get().currentMatchContext;
+    if (!ctx || (ctx.type !== "quick-1v1" && ctx.type !== "specific-1v1")) return;
+    if (ctx.entryFee <= 0) return;
+    const newBalance = get().tokenBalance + ctx.entryFee;
+    const tx = makeTokenTx("refund", ctx.entryFee, newBalance, "ยกเลิกการแข่ง — คืน token");
+    set({
+      tokenBalance: newBalance,
+      tokenTransactions: [tx, ...get().tokenTransactions].slice(0, 200),
+    });
+  },
+
   initAudio: () => {
     preloadAll();
   },
@@ -293,20 +397,48 @@ export const useMatchStore = create<MatchStore>((set, get) => ({
   },
 
   startQuickMatch1v1: () => {
+    const tier = get().selectedBetTier ?? 0;
+    if (tier > 0 && get().tokenBalance < tier) return;
     const opp = createMatchOpponent();
+    const pot = tier * 2;
+    let nextBalance = get().tokenBalance;
+    let nextTxs = get().tokenTransactions;
+    if (tier > 0) {
+      nextBalance -= tier;
+      nextTxs = [
+        makeTokenTx("match_entry", -tier, nextBalance, `เข้าห้อง 1v1 (เดิมพัน ${tier})`),
+        ...nextTxs,
+      ].slice(0, 200);
+    }
     set({
-      ...freshMatch(opp, { type: "quick-1v1" }),
+      ...freshMatch(opp, { type: "quick-1v1", entryFee: tier, pot }),
       currentBracket: null,
+      tokenBalance: nextBalance,
+      tokenTransactions: nextTxs,
     });
   },
 
   startSpecificMatch1v1: (botId) => {
     const id = getBotById(botId);
     if (!id) return;
+    const tier = get().selectedBetTier ?? 0;
+    if (tier > 0 && get().tokenBalance < tier) return;
     const opp = createMatchOpponentFor(id);
+    const pot = tier * 2;
+    let nextBalance = get().tokenBalance;
+    let nextTxs = get().tokenTransactions;
+    if (tier > 0) {
+      nextBalance -= tier;
+      nextTxs = [
+        makeTokenTx("match_entry", -tier, nextBalance, `เชิญแข่ง 1v1 (เดิมพัน ${tier})`),
+        ...nextTxs,
+      ].slice(0, 200);
+    }
     set({
-      ...freshMatch(opp, { type: "specific-1v1", opponentBotId: botId }),
+      ...freshMatch(opp, { type: "specific-1v1", opponentBotId: botId, entryFee: tier, pot }),
       currentBracket: null,
+      tokenBalance: nextBalance,
+      tokenTransactions: nextTxs,
     });
   },
 
@@ -508,6 +640,13 @@ export const useMatchStore = create<MatchStore>((set, get) => ({
     ) {
       recordUserBracketMatchInternal(set, get);
     }
+    // 1v1 contexts: payout + history entry
+    if (
+      state.currentMatchContext?.type === "quick-1v1" ||
+      state.currentMatchContext?.type === "specific-1v1"
+    ) {
+      record1v1MatchEnd(set, get);
+    }
     set({ phase: "match-end" });
   },
 
@@ -516,25 +655,49 @@ export const useMatchStore = create<MatchStore>((set, get) => ({
   replayMatch: () => {
     const ctx = get().currentMatchContext;
     if (!ctx) return;
+    if (ctx.type !== "quick-1v1" && ctx.type !== "specific-1v1") return;
+
+    const tier = ctx.entryFee;
+    if (tier > 0 && get().tokenBalance < tier) {
+      // Not enough tokens — fall back to home so player can top up.
+      set({ currentScreen: "wallet", currentOpponent: null, currentMatchContext: null });
+      return;
+    }
+    let nextBalance = get().tokenBalance;
+    let nextTxs = get().tokenTransactions;
+    if (tier > 0) {
+      nextBalance -= tier;
+      nextTxs = [
+        makeTokenTx("match_entry", -tier, nextBalance, `เล่นอีกครั้ง 1v1 (เดิมพัน ${tier})`),
+        ...nextTxs,
+      ].slice(0, 200);
+    }
+
     if (ctx.type === "quick-1v1") {
       const opp = createMatchOpponent();
       set({
-        ...freshMatch(opp, { type: "quick-1v1" }),
+        ...freshMatch(opp, { type: "quick-1v1", entryFee: tier, pot: tier * 2 }),
         currentBracket: null,
+        tokenBalance: nextBalance,
+        tokenTransactions: nextTxs,
       });
       return;
     }
-    if (ctx.type === "specific-1v1") {
-      const id = getBotById(ctx.opponentBotId);
-      if (!id) return;
-      const opp = createMatchOpponentFor(id);
-      set({
-        ...freshMatch(opp, ctx),
-        currentBracket: null,
-      });
-      return;
-    }
-    // bracket has no replay — bracket continues, doesn't retry. Use exitMatch.
+    // specific-1v1
+    const id = getBotById(ctx.opponentBotId);
+    if (!id) return;
+    const opp = createMatchOpponentFor(id);
+    set({
+      ...freshMatch(opp, {
+        type: "specific-1v1",
+        opponentBotId: ctx.opponentBotId,
+        entryFee: tier,
+        pot: tier * 2,
+      }),
+      currentBracket: null,
+      tokenBalance: nextBalance,
+      tokenTransactions: nextTxs,
+    });
   },
 
   exitMatch: () => {
@@ -611,5 +774,63 @@ function recordUserBracketMatchInternal(
       matches: newMatches,
       participants: newParticipants,
     },
+  });
+}
+
+/** Pay out 1v1 winner + log token transaction + record history. */
+function record1v1MatchEnd(
+  set: (partial: Partial<MatchStore>) => void,
+  get: () => MatchStore,
+) {
+  const state = get();
+  const ctx = state.currentMatchContext;
+  if (!ctx) return;
+  if (ctx.type !== "quick-1v1" && ctx.type !== "specific-1v1") return;
+
+  const opp = state.currentOpponent;
+  if (!opp) return;
+
+  const userScore = state.matchState.score.p1;
+  const oppScore = state.matchState.score.p2;
+  const userWon = userScore > oppScore;
+  const entryFee = ctx.entryFee;
+  const pot = ctx.pot;
+  const rake = Math.floor(pot * RAKE_RATE_1V1);
+  const prize = userWon ? pot - rake : 0;
+  const netTokens = prize - entryFee;
+
+  let newBalance = state.tokenBalance;
+  let newTxs = state.tokenTransactions;
+  if (userWon && prize > 0) {
+    newBalance += prize;
+    newTxs = [
+      makeTokenTx(
+        "match_win",
+        prize,
+        newBalance,
+        `ชนะ 1v1 vs ${opp.identity.username} (รับ ${prize})`,
+      ),
+      ...newTxs,
+    ].slice(0, 200);
+  }
+
+  const historyEntry: MatchHistoryEntry = {
+    id: `match-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    type: "1v1",
+    opponentName: opp.identity.username,
+    opponentAvatar: opp.identity.avatar,
+    result: userWon ? "win" : "loss",
+    scoreYou: userScore,
+    scoreOpp: oppScore,
+    entryFee,
+    prize,
+    netTokens,
+    timestamp: Date.now(),
+  };
+
+  set({
+    tokenBalance: newBalance,
+    tokenTransactions: newTxs,
+    matchHistory: [historyEntry, ...state.matchHistory].slice(0, 100),
   });
 }

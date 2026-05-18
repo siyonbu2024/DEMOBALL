@@ -12,6 +12,8 @@ export const HomeLobby = () => {
   const driftRoomAssignments = useMatchStore((s) => s.driftRoomAssignments);
   const roomAssignments = useMatchStore((s) => s.roomAssignments);
   const userIdentity = useMatchStore((s) => s.userIdentity);
+  const tokenBalance = useMatchStore((s) => s.tokenBalance);
+  const historyCount = useMatchStore((s) => s.matchHistory.length);
 
   useEffect(() => {
     initializeRoomAssignments();
@@ -52,7 +54,11 @@ export const HomeLobby = () => {
       </div>
 
       {/* Player card */}
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-white/10 to-white/5 border border-white/10">
+      <motion.button
+        onClick={() => enterScreen("settings")}
+        whileTap={{ scale: 0.98 }}
+        className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-white/10 to-white/5 border border-white/10 text-left active:bg-white/10 transition"
+      >
         <div className="relative">
           <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-800 flex items-center justify-center text-xl ring-2 ring-emerald-400/60 shadow-lg shadow-emerald-900/50">
             {userIdentity.avatar}
@@ -61,14 +67,46 @@ export const HomeLobby = () => {
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-white font-bold leading-tight">{userIdentity.username}</div>
-          <div className="text-white/50 text-xs tabular-nums">MMR {userIdentity.mmr}</div>
+          <div className="text-white/50 text-xs tabular-nums">MMR {userIdentity.mmr} · แตะเพื่อตั้งค่า</div>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <div className="px-2 py-0.5 rounded bg-yellow-500/25 text-yellow-300 text-[10px] font-black uppercase tracking-widest">
-            PLAYER
+        <div className="text-white/30 text-xl">⚙️</div>
+      </motion.button>
+
+      {/* Quick actions: wallet + history */}
+      <div className="grid grid-cols-2 gap-3 -mt-1">
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => enterScreen("wallet")}
+          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-xl bg-gradient-to-br from-amber-600/80 to-orange-800/80 border border-amber-400/40 text-left shadow-lg shadow-amber-900/30"
+        >
+          <div className="text-2xl">🪙</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] uppercase tracking-widest text-amber-100/80 font-bold">
+              Token
+            </div>
+            <div className="text-base font-black text-white tabular-nums leading-tight">
+              {tokenBalance.toLocaleString()}
+            </div>
           </div>
-          <div className="text-[10px] text-emerald-400 font-semibold">● Online</div>
-        </div>
+          <div className="text-white/40 text-lg">›</div>
+        </motion.button>
+
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => enterScreen("match-history")}
+          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-xl bg-gradient-to-br from-slate-600/80 to-slate-800/80 border border-white/15 text-left shadow-lg"
+        >
+          <div className="text-2xl">📊</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] uppercase tracking-widest text-white/60 font-bold">
+              ประวัติ
+            </div>
+            <div className="text-base font-black text-white tabular-nums leading-tight">
+              {historyCount} แมตช์
+            </div>
+          </div>
+          <div className="text-white/40 text-lg">›</div>
+        </motion.button>
       </div>
 
       {/* Mode label */}
