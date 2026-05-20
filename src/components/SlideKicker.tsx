@@ -10,6 +10,7 @@ import { Ball } from "./svg/Ball";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
 import { Pitch } from "./svg/Pitch";
+import { Shooter } from "./svg/Shooter";
 
 interface Props {
   onLock: (zone: Zone) => void;
@@ -160,6 +161,9 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
             }}
           />
         )}
+
+        {/* Shooter character standing behind/beside the ball */}
+        <Shooter pose="idle" />
 
         {/* Ball stays at start position — only flies during RevealOverlay */}
         <Ball cx={PLAY_AREA.ballStartX} cy={PLAY_AREA.ballStartY} r={BALL_R} />

@@ -11,6 +11,7 @@ import { ScoreHeader } from "../ScoreHeader";
 import { Goal } from "../svg/Goal";
 import { Keeper } from "../svg/Keeper";
 import { Pitch } from "../svg/Pitch";
+import { Shooter } from "../svg/Shooter";
 
 export const RevealOverlay = () => {
   const matchState = useMatchStore((s) => s.matchState);
@@ -51,6 +52,7 @@ function RevealStage({
 }) {
   const [activeKeeper, setActiveKeeper] = useState<Zone | null>(null);
   const [activePose, setActivePose] = useState<"idle" | "caught" | "beaten">("idle");
+  const [shooterPose, setShooterPose] = useState<"idle" | "windup" | "follow-through">("idle");
 
   const targetK = zoneCenter(kicker);
 
@@ -68,6 +70,21 @@ function RevealStage({
     }, TIMING.revealKeeperDiveStart);
     return () => clearTimeout(t);
   }, [keeper, isGoal]);
+
+  useEffect(() => {
+    const t1 = setTimeout(
+      () => setShooterPose("windup"),
+      TIMING.revealCharacterWindup,
+    );
+    const t2 = setTimeout(
+      () => setShooterPose("follow-through"),
+      TIMING.revealBallFlightStart,
+    );
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col flex-1">
@@ -130,6 +147,15 @@ function RevealStage({
                 divingTo={activeKeeper}
                 pose={activePose}
               />
+            </motion.g>
+
+            {/* Shooter — windup → follow-through, fades after impact */}
+            <motion.g
+              initial={{ opacity: 1 }}
+              animate={{ opacity: [1, 1, 0.55] }}
+              transition={{ duration: tBallEnd, times: [0, 0.7, 1] }}
+            >
+              <Shooter pose={shooterPose} />
             </motion.g>
 
           </svg>
