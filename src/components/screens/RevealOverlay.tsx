@@ -10,7 +10,7 @@ import { useMatchStore } from "@/store/match-store";
 import { ScoreHeader } from "../ScoreHeader";
 import { Goal } from "../svg/Goal";
 import { Keeper } from "../svg/Keeper";
-import { LottieKeeper } from "../svg/LottieKeeper";
+import { LottieKeeper, type KeeperAnim } from "../svg/LottieKeeper";
 import { Pitch } from "../svg/Pitch";
 import { Shooter } from "../svg/Shooter";
 
@@ -54,13 +54,8 @@ function RevealStage({
   const [activeKeeper, setActiveKeeper] = useState<Zone | null>(null);
   const [activePose, setActivePose] = useState<"idle" | "caught" | "beaten">("idle");
   const [shooterPose, setShooterPose] = useState<"idle" | "windup" | "follow-through">("idle");
-  /**
-   * Drives the wrapper's pose. Starts "idle" (keeper centred upright); at
-   * tKeeper we flip to "diving" and Framer Motion animates the wrapper's
-   * left + rotate continuously to the chosen zone — Lottie keeps playing
-   * the same idle JSON throughout, so the body never teleports.
-   */
-  const [keeperPose, setKeeperPose] = useState<"idle" | "diving">("idle");
+  /** Idle until tKeeper, then flips to the appropriate dive variant. */
+  const [keeperAnim, setKeeperAnim] = useState<KeeperAnim>("idle");
 
   const targetK = zoneCenter(kicker);
 
@@ -69,12 +64,6 @@ function RevealStage({
     keeper === 1 || keeper === 4 ? 28
     : keeper === 3 || keeper === 6 ? 72
     : 50;
-
-  // Body tilt toward the chosen zone. Negative = lean left.
-  const diveRotateDeg =
-    keeper === 1 || keeper === 4 ? -60
-    : keeper === 3 || keeper === 6 ? 60
-    : 0;
 
   // Times in seconds (Framer takes seconds for delay/duration)
   const tBall = TIMING.revealBallFlightStart / 1000;
@@ -87,7 +76,8 @@ function RevealStage({
     const t = setTimeout(() => {
       setActiveKeeper(keeper);
       setActivePose(isGoal ? "beaten" : "caught");
-      setKeeperPose("diving");
+      const isRight = keeper === 3 || keeper === 6;
+      setKeeperAnim(isRight ? "dive-right" : "dive-left");
     }, TIMING.revealKeeperDiveStart);
     return () => clearTimeout(t);
   }, [keeper, isGoal]);
@@ -166,28 +156,25 @@ function RevealStage({
 
           </svg>
 
-          {/* Keeper — always plays the idle Lottie. The visible "dive" is a
-              Framer-Motion transform on the wrapper (slide + rotate) so the
-              motion is one continuous arc instead of a variant switch. */}
+          {/* Keeper — idle Lottie before tKeeper, swaps to dive variant on
+              dive. Same canvas size across all variants, so the swap is
+              seamless. Wrapper also slides toward the chosen zone. */}
           <motion.div
             className="absolute pointer-events-none flex justify-center"
             style={{
               top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
               height: `${(115 / PLAY_AREA.height) * 100}%`,
-              transformOrigin: "50% 100%", // pivot at the feet
               zIndex: 5,
             }}
             initial={{
               left: "50%",
               x: "-50%",
               y: "-100%",
-              rotate: 0,
             }}
             animate={{
-              left: keeperPose === "diving" ? `${diveTargetLeftPct}%` : "50%",
+              left: keeperAnim === "idle" ? "50%" : `${diveTargetLeftPct}%`,
               x: "-50%",
               y: "-100%",
-              rotate: keeperPose === "diving" ? diveRotateDeg : 0,
             }}
             transition={{
               duration:
@@ -196,7 +183,10 @@ function RevealStage({
               ease: EASING.outExpo,
             }}
           >
-            <LottieKeeper variant="idle" loop />
+            <LottieKeeper
+              variant={keeperAnim}
+              loop={keeperAnim === "idle"}
+            />
           </motion.div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}

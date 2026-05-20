@@ -7,14 +7,13 @@ import type { LottieRefCurrentProps } from "lottie-react";
  * Lottie-driven keeper animation.
  *
  * Variants map to JSON files under /public:
- *   - "idle"      → /Keeper.json            (383 × 335)
- *   - "dive-left" → /Keeper_Dive_Left.json  (924 × 335)
+ *   - "idle"      → /Keeper_Idle.json       (1200 × 670)
+ *   - "dive-left" → /Keeper_Dive_Left.json  (1200 × 670)
  *   - "dive-right"→ /Keeper_Dive_Left.json  + horizontal flip
  *
- * Important: dive frames are ~2.4× wider than idle because the character
- * travels across the canvas. The component fills the parent's HEIGHT and
- * grows its own width via aspect-ratio — this way the character stays the
- * same physical size when swapping idle → dive (caller anchors by height).
+ * Both files now share the same canvas size, so swapping variants no
+ * longer shifts the character — we can render them all with
+ * preserveAspectRatio "meet" and a single shared aspect ratio.
  */
 
 export type KeeperAnim = "idle" | "dive-left" | "dive-right";
@@ -28,17 +27,12 @@ interface VariantSpec {
 }
 
 const SOURCE: Record<KeeperAnim, VariantSpec> = {
-  idle:         { src: "/Keeper.json",            flipX: false, w: 383, h: 335 },
-  "dive-left":  { src: "/Keeper_Dive_Left.json",  flipX: false, w: 924, h: 335 },
-  "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true,  w: 924, h: 335 },
+  idle:         { src: "/Keeper_Idle.json",       flipX: false, w: 1200, h: 670 },
+  "dive-left":  { src: "/Keeper_Dive_Left.json",  flipX: false, w: 1200, h: 670 },
+  "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true,  w: 1200, h: 670 },
 };
 
-/**
- * Every variant renders into a wrapper with this aspect ratio (idle's
- * shape). Dive's wider canvas gets cropped via Lottie's `slice` setting,
- * so the character stays at the same on-screen position when switching
- * idle ↔ dive — no horizontal teleport.
- */
+/** All variants share the same canvas now, so one aspect ratio fits all. */
 const STABLE_ASPECT = SOURCE.idle.w / SOURCE.idle.h;
 
 interface Props {
@@ -149,25 +143,18 @@ export const LottieKeeper = ({
     else lottieRef.current.play();
   }, [paused, animationData]);
 
-  // Sizing: every variant fits into the same STABLE_ASPECT box (idle's
-  // ratio). Dive's wider canvas is cropped by Lottie's slice setting (see
-  // rendererSettings below). overflow:hidden guards against sub-pixel
-  // bleed at certain resolutions.
+  // All variants share the same canvas, so a single aspect-ratio box and
+  // letterboxed "meet" rendering keep the character pixel-aligned across
+  // a variant swap.
   const sizingStyle: React.CSSProperties = {
     height: "100%",
     width: "auto",
     aspectRatio: `${STABLE_ASPECT}`,
-    overflow: "hidden",
     pointerEvents: "none",
     transform: displayedSpec.flipX ? "scaleX(-1)" : undefined,
   };
 
-  // For dive (wide canvas with character anchored at the left), keep the
-  // LEFT slice visible. For flipped right-side dive the CSS mirror swaps
-  // sides, so we anchor to xMax instead.
-  const preserveAspectRatio = displayedSpec.flipX
-    ? "xMaxYMid slice"
-    : "xMinYMid slice";
+  const preserveAspectRatio = "xMidYMid meet";
 
   if (!LottieComponent || !animationData) {
     return <div className={className} style={sizingStyle} />;
