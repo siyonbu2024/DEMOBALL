@@ -10,6 +10,7 @@ import { useMatchStore } from "@/store/match-store";
 import { ScoreHeader } from "../ScoreHeader";
 import { Goal } from "../svg/Goal";
 import { Keeper } from "../svg/Keeper";
+import { LottieKeeper, type KeeperAnim } from "../svg/LottieKeeper";
 import { Pitch } from "../svg/Pitch";
 import { Shooter } from "../svg/Shooter";
 
@@ -53,6 +54,7 @@ function RevealStage({
   const [activeKeeper, setActiveKeeper] = useState<Zone | null>(null);
   const [activePose, setActivePose] = useState<"idle" | "caught" | "beaten">("idle");
   const [shooterPose, setShooterPose] = useState<"idle" | "windup" | "follow-through">("idle");
+  const [keeperAnim, setKeeperAnim] = useState<KeeperAnim>("idle");
 
   const targetK = zoneCenter(kicker);
 
@@ -67,6 +69,10 @@ function RevealStage({
     const t = setTimeout(() => {
       setActiveKeeper(keeper);
       setActivePose(isGoal ? "beaten" : "caught");
+      // Keeper dives left (zones 1, 4) or right (zones 3, 6). Centre zones
+      // (2, 5) dive left as a fallback — they're rarely chosen by the AI.
+      const isRight = keeper === 3 || keeper === 6;
+      setKeeperAnim(isRight ? "dive-right" : "dive-left");
     }, TIMING.revealKeeperDiveStart);
     return () => clearTimeout(t);
   }, [keeper, isGoal]);
@@ -128,26 +134,11 @@ function RevealStage({
               />
             )}
 
-            {/* Keeper dive */}
-            <motion.g
-              initial={{ opacity: 1 }}
-              animate={{
-                scale: [1, 1.06, 1],
-              }}
-              transition={{
-                delay: tKeeper,
-                duration: 0.4,
-                ease: EASING.outExpo,
-              }}
-              style={{
-                transformOrigin: `${PLAY_AREA.width / 2}px ${PLAY_AREA.goalHeight}px`,
-              }}
-            >
-              <Keeper
-                divingTo={activeKeeper}
-                pose={activePose}
-              />
-            </motion.g>
+            {/* Static SVG keeper hidden — Lottie overlay below drives both
+                idle and dive. Kept in tree for layout parity. */}
+            <g style={{ opacity: 0 }}>
+              <Keeper divingTo={activeKeeper} pose={activePose} />
+            </g>
 
             {/* Shooter — windup → follow-through, fades after impact */}
             <motion.g
@@ -159,6 +150,21 @@ function RevealStage({
             </motion.g>
 
           </svg>
+
+          {/* Lottie keeper — idle pre-dive, swaps to dive variant at tKeeper */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: "50%",
+              top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
+              transform: "translate(-50%, -100%)",
+              width: `${(140 / PLAY_AREA.width) * 100}%`,
+              aspectRatio: "1 / 1",
+              zIndex: 5,
+            }}
+          >
+            <LottieKeeper variant={keeperAnim} loop={keeperAnim === "idle"} />
+          </div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}
           <motion.div
