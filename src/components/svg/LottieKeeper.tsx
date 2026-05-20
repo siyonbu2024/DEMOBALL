@@ -57,6 +57,20 @@ function loadJson(src: string): Promise<unknown> {
   return cache.get(src)!;
 }
 
+/**
+ * Warm the cache for every variant. Called on first mount so switching
+ * between idle ↔ dive has no fetch delay (which used to cause a brief
+ * flicker of the placeholder div right before the dive started).
+ */
+let prewarmed = false;
+function prewarmAllVariants(): void {
+  if (prewarmed || typeof window === "undefined") return;
+  prewarmed = true;
+  for (const variant of Object.keys(SOURCE) as KeeperAnim[]) {
+    void loadJson(SOURCE[variant].src);
+  }
+}
+
 export const LottieKeeper = ({
   variant = "idle",
   loop = variant === "idle",
@@ -65,7 +79,13 @@ export const LottieKeeper = ({
   className = "",
 }: Props) => {
   const lottieRef = useRef<LottieRefCurrentProps>(null);
-  const [animationData, setAnimationData] = useState<unknown | null>(null);
+  // Track which source is currently displayed (vs. the requested variant).
+  // We only swap once the new JSON has loaded, so the previous animation
+  // stays on screen instead of flashing a blank placeholder.
+  const [displayed, setDisplayed] = useState<{
+    src: string;
+    data: unknown;
+  } | null>(null);
   const [LottieComponent, setLottieComponent] = useState<React.ComponentType<{
     animationData: unknown;
     loop: boolean;
@@ -75,12 +95,17 @@ export const LottieKeeper = ({
     rendererSettings?: { preserveAspectRatio: string };
   }> | null>(null);
 
-  const { src, flipX, w, h } = SOURCE[variant];
+  const { src } = SOURCE[variant];
 
-  // Dynamically import lottie-react + animation JSON on mount / variant change.
+  // Warm all variants once so subsequent swaps are instant.
+  useEffect(() => {
+    prewarmAllVariants();
+  }, []);
+
+  // Load lottie-react + the current variant's JSON. Only commit to state
+  // when both are ready, so we never show an empty wrapper between swaps.
   useEffect(() => {
     let cancelled = false;
-    setAnimationData(null);
 
     Promise.all([
       import("lottie-react"),
@@ -89,7 +114,7 @@ export const LottieKeeper = ({
       .then(([mod, json]) => {
         if (cancelled) return;
         setLottieComponent(() => mod.default);
-        setAnimationData(json);
+        setDisplayed({ src, data: json });
       })
       .catch((err) => {
         console.error(`Failed to load Lottie keeper (${src}):`, err);
@@ -100,6 +125,16 @@ export const LottieKeeper = ({
     };
   }, [src]);
 
+  // While the new variant is still loading, keep showing the previous one
+  // (it's already cached for any non-first variant due to prewarm).
+  const showingSrc = displayed?.src ?? src;
+  const animationData = displayed?.data ?? null;
+  // If we're displaying an older variant, use ITS aspect — otherwise the
+  // wrapper would have already snapped to the new aspect and stretched the
+  // outgoing animation.
+  const displayedSpec = (Object.entries(SOURCE) as [KeeperAnim, VariantSpec][])
+    .find(([, spec]) => spec.src === showingSrc)?.[1] ?? SOURCE[variant];
+
   useEffect(() => {
     if (!lottieRef.current) return;
     if (paused) lottieRef.current.pause();
@@ -108,13 +143,15 @@ export const LottieKeeper = ({
 
   // Sizing: fill parent's HEIGHT and let aspect-ratio drive the width.
   // Idle (1.14:1) is near-square; dive (2.76:1) gets a wide box so the
-  // character physically the same size as idle when feet/head are aligned.
+  // character is the same physical size when feet/head are aligned.
+  // Use the displayed spec's aspect so an old animation keeps its proper
+  // dimensions while a new one is loading.
   const sizingStyle: React.CSSProperties = {
     height: "100%",
     width: "auto",
-    aspectRatio: `${w} / ${h}`,
+    aspectRatio: `${displayedSpec.w} / ${displayedSpec.h}`,
     pointerEvents: "none",
-    transform: flipX ? "scaleX(-1)" : undefined,
+    transform: displayedSpec.flipX ? "scaleX(-1)" : undefined,
   };
 
   if (!LottieComponent || !animationData) {
