@@ -33,6 +33,14 @@ const SOURCE: Record<KeeperAnim, VariantSpec> = {
   "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true,  w: 924, h: 335 },
 };
 
+/**
+ * Every variant renders into a wrapper with this aspect ratio (idle's
+ * shape). Dive's wider canvas gets cropped via Lottie's `slice` setting,
+ * so the character stays at the same on-screen position when switching
+ * idle ↔ dive — no horizontal teleport.
+ */
+const STABLE_ASPECT = SOURCE.idle.w / SOURCE.idle.h;
+
 interface Props {
   /** Which animation to play. */
   variant?: KeeperAnim;
@@ -141,18 +149,25 @@ export const LottieKeeper = ({
     else lottieRef.current.play();
   }, [paused, animationData]);
 
-  // Sizing: fill parent's HEIGHT and let aspect-ratio drive the width.
-  // Idle (1.14:1) is near-square; dive (2.76:1) gets a wide box so the
-  // character is the same physical size when feet/head are aligned.
-  // Use the displayed spec's aspect so an old animation keeps its proper
-  // dimensions while a new one is loading.
+  // Sizing: every variant fits into the same STABLE_ASPECT box (idle's
+  // ratio). Dive's wider canvas is cropped by Lottie's slice setting (see
+  // rendererSettings below). overflow:hidden guards against sub-pixel
+  // bleed at certain resolutions.
   const sizingStyle: React.CSSProperties = {
     height: "100%",
     width: "auto",
-    aspectRatio: `${displayedSpec.w} / ${displayedSpec.h}`,
+    aspectRatio: `${STABLE_ASPECT}`,
+    overflow: "hidden",
     pointerEvents: "none",
     transform: displayedSpec.flipX ? "scaleX(-1)" : undefined,
   };
+
+  // For dive (wide canvas with character anchored at the left), keep the
+  // LEFT slice visible. For flipped right-side dive the CSS mirror swaps
+  // sides, so we anchor to xMax instead.
+  const preserveAspectRatio = displayedSpec.flipX
+    ? "xMaxYMid slice"
+    : "xMinYMid slice";
 
   if (!LottieComponent || !animationData) {
     return <div className={className} style={sizingStyle} />;
@@ -166,7 +181,7 @@ export const LottieKeeper = ({
         autoplay={!paused}
         lottieRef={lottieRef}
         onComplete={onComplete}
-        rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
+        rendererSettings={{ preserveAspectRatio }}
       />
     </div>
   );

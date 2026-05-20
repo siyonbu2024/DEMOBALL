@@ -60,9 +60,12 @@ function RevealStage({
 
   // Where (horizontally, in % of play area) the keeper should END the dive.
   // Idle starts centred; once the dive starts, the wrapper slides to here.
+  // 30 / 70 reads as a deliberate "lean" toward the chosen zone — going
+  // further (e.g. 25 / 75) made the keeper look like it was leaving the
+  // goal frame now that the Lottie no longer contributes any side motion.
   const diveTargetLeftPct =
-    keeper === 1 || keeper === 4 ? 25
-    : keeper === 3 || keeper === 6 ? 75
+    keeper === 1 || keeper === 4 ? 30
+    : keeper === 3 || keeper === 6 ? 70
     : 50;
 
   // Times in seconds (Framer takes seconds for delay/duration)
