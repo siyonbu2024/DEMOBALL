@@ -47,7 +47,7 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
     if (disabled || lockedZone !== null) return;
     const t = setTimeout(() => {
       if (lockedZone === null) {
-        const zone = previewZone ?? 4;
+        const zone = previewZone ?? 5;
         navigator.vibrate?.(20);
         play("click");
         setLockedZone(zone);

@@ -45,8 +45,8 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
     if (disabled || lockedZone !== null) return;
     const t = setTimeout(() => {
       if (lockedZone === null) {
-        // Default to zone 4 if user doesn't pick (zone 5 removed)
-        const z: Zone = 4;
+        // Default to zone 5 (bottom-centre) if user doesn't pick — most neutral
+        const z: Zone = 5;
         navigator.vibrate?.(20);
         play("click");
         setLockedZone(z);

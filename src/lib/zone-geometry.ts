@@ -49,10 +49,7 @@ export function zoneFromTarget(
   const localY = Math.max(0, Math.min(goalHeight - 1, targetY - goalTop));
   const col = Math.max(0, Math.min(2, Math.floor((localX / goalWidth) * 3)));
   const row = localY < goalHeight / 2 ? 0 : 1;
-  const zone = (row * 3 + col + 1) as Zone;
-  // Zone 5 (bottom-centre) is removed — remap to 4 (left) or 6 (right)
-  if (zone === 5) return localX < goalWidth / 2 ? 4 : 6;
-  return zone;
+  return (row * 3 + col + 1) as Zone;
 }
 
 /**

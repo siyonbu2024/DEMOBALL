@@ -22,7 +22,7 @@ import type { BotIdentity } from "./bot-identities";
  */
 export type Zone = 1 | 2 | 3 | 4 | 5 | 6;
 
-export const ALL_ZONES: readonly Zone[] = [1, 2, 3, 4, 6] as const; // zone 5 (bottom-centre) removed
+export const ALL_ZONES: readonly Zone[] = [1, 2, 3, 4, 5, 6] as const;
 
 export type Player = "p1" | "p2";
 
