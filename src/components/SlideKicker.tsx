@@ -9,6 +9,7 @@ import { PLAY_AREA, zoneCenter, zoneFromDragOffset, zoneRect } from "@/lib/zone-
 import { Ball } from "./svg/Ball";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
+import { LottieKeeper } from "./svg/LottieKeeper";
 import { Pitch } from "./svg/Pitch";
 import { Shooter } from "./svg/Shooter";
 
@@ -122,8 +123,11 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
           showLabels={!showLocked}
         />
 
-        {/* Keeper — always idle on kicker's side; dive happens in RevealOverlay */}
-        <Keeper divingTo={null} />
+        {/* Static keeper kept for reference but hidden — Lottie idle below
+            renders the actual animated character on top. */}
+        <g style={{ opacity: 0 }}>
+          <Keeper divingTo={null} />
+        </g>
 
         {/* Trajectory while dragging */}
         {!showLocked && (dragOffset.x !== 0 || dragOffset.y !== 0) && (
@@ -168,6 +172,20 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
         {/* Ball stays at start position — only flies during RevealOverlay */}
         <Ball cx={PLAY_AREA.ballStartX} cy={PLAY_AREA.ballStartY} r={BALL_R} />
       </svg>
+
+      {/* Lottie keeper — idle, anchored to goal floor */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          left: "50%",
+          top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
+          transform: "translate(-50%, -100%)",
+          width: `${(120 / PLAY_AREA.width) * 100}%`,
+          aspectRatio: "1 / 1",
+        }}
+      >
+        <LottieKeeper loop />
+      </div>
 
       {/* Tappable zone overlay — tap a zone to kick directly */}
       {!showLocked && (

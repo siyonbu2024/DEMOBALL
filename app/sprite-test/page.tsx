@@ -17,7 +17,7 @@ export default function SpriteTestPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-black mb-1">Keeper Dive Sprite Test</h1>
         <p className="text-white/60 text-sm mb-6">
-          <strong>File:</strong> <code className="text-amber-300">/public/Keeper_dive_spirte.png</code>
+          <strong>File:</strong> <code className="text-amber-300">/public/Keeper_dive_2_sprite.png</code>
           <br />
           Animation มี <span className="text-emerald-300 font-bold tabular-nums">{KEEPER_DIVE_FRAME_COUNT}</span> frames.
           ถ้า frame ไม่ตรง แก้ <code className="text-amber-300">DIVE_FRAMES</code> ใน
@@ -119,7 +119,7 @@ export default function SpriteTestPage() {
             Sprite sheet ต้นฉบับ (raw)
           </div>
           <img
-            src="/Keeper_dive_spirte.png"
+            src="/Keeper_dive_2_sprite.png"
             alt="Keeper dive sprite sheet"
             className="w-full block"
             style={{
@@ -149,8 +149,8 @@ export default function SpriteTestPage() {
 }
 
 function SpriteSheetInspector() {
-  const [cols, setCols] = useState(8);
-  const [rows, setRows] = useState(5);
+  const [cols, setCols] = useState(10);
+  const [rows, setRows] = useState(10);
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-md p-4">
@@ -189,7 +189,7 @@ function SpriteSheetInspector() {
         style={{ background: "rgba(255,255,255,0.05)" }}
       >
         <img
-          src="/Keeper_dive_spirte.png"
+          src="/Keeper_dive_2_sprite.png"
           alt="Keeper dive sprite sheet"
           className="w-full block"
         />

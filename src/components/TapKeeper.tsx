@@ -8,6 +8,7 @@ import { ALL_ZONES, type Zone } from "@/lib/types";
 import { PLAY_AREA, zoneRect } from "@/lib/zone-geometry";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
+import { LottieKeeper } from "./svg/LottieKeeper";
 import { Pitch } from "./svg/Pitch";
 
 interface Props {
@@ -79,8 +80,11 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
 
         <Goal keeperHighlight={lockedZone} dim showLabels={lockedZone === null} />
 
-        {/* Keeper — stays idle while player chooses, dives only on revealZone */}
-        <Keeper divingTo={revealZone ?? null} pose={undefined} />
+        {/* Static SVG keeper — only visible when diving (revealZone set).
+            Idle pose is drawn by the Lottie overlay below. */}
+        {revealZone !== null && (
+          <Keeper divingTo={revealZone} pose={undefined} />
+        )}
 
         {/* Timer ring at top of pitch */}
         {!disabled && lockedZone === null && (
@@ -105,6 +109,23 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
           />
         )}
       </svg>
+
+      {/* Lottie keeper — idle only, hidden once dive starts */}
+      {revealZone === null && (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: "50%",
+            top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
+            transform: "translate(-50%, -100%)",
+            width: `${(120 / PLAY_AREA.width) * 100}%`,
+            aspectRatio: "1 / 1",
+            zIndex: 5,
+          }}
+        >
+          <LottieKeeper loop />
+        </div>
+      )}
 
       {/* Tappable zone overlay (positioned in % over the SVG) */}
       <div className="absolute inset-0">
