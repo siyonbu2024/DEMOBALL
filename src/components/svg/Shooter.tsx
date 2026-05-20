@@ -28,9 +28,10 @@ export const Shooter = ({
   y,
 }: Props) => {
   const w = height * ASPECT;
-  // Default: stand just to the left of the ball, foot at the ball.
-  const ix = x ?? PLAY_AREA.ballStartX - w * 0.55;
-  const iy = y ?? PLAY_AREA.ballStartY - height + 18;
+  // Default: stand offset to the LEFT of the ball so the ball and the
+  // character don't overlap. Right foot sits roughly under the ball.
+  const ix = x ?? PLAY_AREA.ballStartX - w * 0.85;
+  const iy = y ?? PLAY_AREA.height - height - 10;
 
   // Tiny pose tilt for follow-through (no body animation needed in demo).
   const rotate =

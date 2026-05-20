@@ -25,7 +25,12 @@ export const PLAY_AREA = {
   goalWidth: 300,
   goalHeight: 240,
   ballStartX: 150,
-  ballStartY: 460,
+  /**
+   * Ball sits in the run-up area at a comfortable distance below the goal.
+   * Goal occupies y 0..240; Shooter is offset to the left so the ball can
+   * remain at its natural penalty-spot height without overlapping him.
+   */
+  ballStartY: 430,
 } as const;
 
 /**
