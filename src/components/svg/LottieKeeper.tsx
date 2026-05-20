@@ -129,13 +129,11 @@ export const LottieKeeper = ({
 
   // While the new variant is still loading, keep showing the previous one
   // (it's already cached for any non-first variant due to prewarm).
-  const showingSrc = displayed?.src ?? src;
   const animationData = displayed?.data ?? null;
-  // If we're displaying an older variant, use ITS aspect — otherwise the
-  // wrapper would have already snapped to the new aspect and stretched the
-  // outgoing animation.
-  const displayedSpec = (Object.entries(SOURCE) as [KeeperAnim, VariantSpec][])
-    .find(([, spec]) => spec.src === showingSrc)?.[1] ?? SOURCE[variant];
+  // Use the REQUESTED variant's spec, not whichever has the same src —
+  // dive-left and dive-right share a JSON file, so finding-by-src would
+  // always return dive-left and silently drop flipX.
+  const displayedSpec = SOURCE[variant];
 
   useEffect(() => {
     if (!lottieRef.current) return;

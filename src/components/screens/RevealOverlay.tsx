@@ -59,11 +59,20 @@ function RevealStage({
 
   const targetK = zoneCenter(kicker);
 
-  // Where (horizontally, in % of play area) the keeper should END the dive.
+  // Horizontal landing (% of play area width).
   const diveTargetLeftPct =
     keeper === 1 || keeper === 4 ? 28
     : keeper === 3 || keeper === 6 ? 72
     : 50;
+
+  // Vertical landing. Top-row zones (1/2/3) → keeper jumps so the
+  // bottom of the wrapper sits at the top-row's lower edge (y=120).
+  // Bottom-row zones (4/5/6) → wrapper bottom stays at the goal floor (y=240).
+  const isTopRowZone = keeper === 1 || keeper === 2 || keeper === 3;
+  const diveTargetTopPct =
+    (isTopRowZone ? PLAY_AREA.goalHeight / 2 : PLAY_AREA.goalHeight) /
+    PLAY_AREA.height *
+    100;
 
   // Times in seconds (Framer takes seconds for delay/duration)
   const tBall = TIMING.revealBallFlightStart / 1000;
@@ -162,7 +171,6 @@ function RevealStage({
           <motion.div
             className="absolute pointer-events-none flex justify-center"
             style={{
-              top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
               // 200 viewBox units → keeper character (which occupies the
               // bottom ~50 % of the 1200×670 Lottie canvas) ends up roughly
               // 100 SVG units tall, comparable to a single goal zone.
@@ -171,11 +179,16 @@ function RevealStage({
             }}
             initial={{
               left: "50%",
+              top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
               x: "-50%",
               y: "-100%",
             }}
             animate={{
               left: keeperAnim === "idle" ? "50%" : `${diveTargetLeftPct}%`,
+              top:
+                keeperAnim === "idle"
+                  ? `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`
+                  : `${diveTargetTopPct}%`,
               x: "-50%",
               y: "-100%",
             }}
