@@ -39,17 +39,26 @@ export const RevealOverlay = () => {
   }, [finishReveal, last]);
 
   if (!last) return null;
-  return <RevealStage kicker={last.kickerChoice} keeper={last.keeperChoice} isGoal={last.outcome === "goal"} />;
+  return (
+    <RevealStage
+      kicker={last.kickerChoice}
+      keeper={last.keeperChoice}
+      isGoal={last.outcome === "goal"}
+      userIsKicker={last.kicker === "p1"}
+    />
+  );
 };
 
 function RevealStage({
   kicker,
   keeper,
   isGoal,
+  userIsKicker,
 }: {
   kicker: Zone;
   keeper: Zone;
   isGoal: boolean;
+  userIsKicker: boolean;
 }) {
   const [activeKeeper, setActiveKeeper] = useState<Zone | null>(null);
   const [activePose, setActivePose] = useState<"idle" | "caught" | "beaten">("idle");
@@ -124,10 +133,11 @@ function RevealStage({
           >
             <Pitch />
 
-            {/* Goal with both choices highlighted */}
+            {/* User's pick is always blue, opponent's is red — independent
+                of which role the user played this round. */}
             <Goal
-              kickerHighlight={kicker}
-              keeperHighlight={keeper}
+              userHighlight={userIsKicker ? kicker : keeper}
+              opponentHighlight={userIsKicker ? keeper : kicker}
               showLabels={false}
             />
 
@@ -257,7 +267,9 @@ function RevealStage({
       </div>
 
       <div className="text-center text-white/70 text-xs py-2 tabular-nums">
-        คุณยิง zone {kicker} · ผู้รักษาเลือก zone {keeper}
+        {userIsKicker
+          ? `คุณยิง zone ${kicker} · คู่ต่อสู้เซฟ zone ${keeper}`
+          : `คู่ต่อสู้ยิง zone ${kicker} · คุณเซฟ zone ${keeper}`}
       </div>
     </div>
   );

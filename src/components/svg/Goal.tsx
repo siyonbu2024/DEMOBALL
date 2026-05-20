@@ -6,15 +6,17 @@ import { PLAY_AREA, zoneRect } from "@/lib/zone-geometry";
 const POST = 9;
 
 interface Props {
-  kickerHighlight?: Zone | null;
-  keeperHighlight?: Zone | null;
+  /** Zone the local user picked — always rendered in BLUE. */
+  userHighlight?: Zone | null;
+  /** Zone the opponent picked — always rendered in RED. */
+  opponentHighlight?: Zone | null;
   dim?: boolean;
   showLabels?: boolean;
 }
 
 export const Goal = ({
-  kickerHighlight = null,
-  keeperHighlight = null,
+  userHighlight = null,
+  opponentHighlight = null,
   dim = false,
   showLabels = true,
 }: Props) => {
@@ -91,34 +93,39 @@ export const Goal = ({
       {/* Depth vignette */}
       <rect x={GL} y={GT} width={GW} height={GH} fill="url(#g-vignette)" />
 
-      {/* Zone overlays */}
+      {/* Zone overlays — user side BLUE, opponent side RED */}
       {ALL_ZONES.map((z) => {
         const r = zoneRect(z);
-        const isKicker = kickerHighlight === z;
-        const isKeeper = keeperHighlight === z;
-        const fill = isKicker
-          ? "rgba(255,60,60,0.42)"
-          : isKeeper
+        const isUser = userHighlight === z;
+        const isOpponent = opponentHighlight === z;
+        const highlighted = isUser || isOpponent;
+        const fill = isUser
           ? "rgba(40,120,255,0.42)"
+          : isOpponent
+          ? "rgba(255,60,60,0.42)"
           : dim
           ? "rgba(0,0,0,0)"
           : "rgba(255,255,255,0.04)";
-        const stroke = isKicker ? "#ff4040" : isKeeper ? "#2878ff" : "rgba(255,255,255,0.25)";
+        const stroke = isUser
+          ? "#2878ff"
+          : isOpponent
+          ? "#ff4040"
+          : "rgba(255,255,255,0.25)";
         return (
           <g key={z}>
             <rect
               x={r.x + POST / 2} y={r.y + POST / 2}
               width={r.width - POST} height={r.height - POST / 2}
               fill={fill} stroke={stroke}
-              strokeWidth={isKicker || isKeeper ? 2.5 : 1.5}
-              strokeDasharray={isKicker || isKeeper ? "none" : "5 3"}
+              strokeWidth={highlighted ? 2.5 : 1.5}
+              strokeDasharray={highlighted ? "none" : "5 3"}
             />
             {showLabels && (
               <text
                 x={r.x + r.width / 2} y={r.y + r.height / 2 + 9}
                 textAnchor="middle" fontFamily="system-ui, sans-serif"
                 fontWeight="800" fontSize={22}
-                fill={isKicker || isKeeper ? "#ffffff" : "rgba(255,255,255,0.5)"}
+                fill={highlighted ? "#ffffff" : "rgba(255,255,255,0.5)"}
               >
                 {z}
               </text>

@@ -78,7 +78,7 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
       >
         <Pitch />
 
-        <Goal keeperHighlight={lockedZone} dim showLabels={lockedZone === null} />
+        <Goal userHighlight={lockedZone} dim showLabels={lockedZone === null} />
 
         {/* Static SVG keeper — only visible when diving (revealZone set).
             Idle pose is drawn by the Lottie overlay below. */}

@@ -118,7 +118,7 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
         <Pitch />
 
         <Goal
-          kickerHighlight={lockedZone ?? previewZone}
+          userHighlight={lockedZone ?? previewZone}
           dim
           showLabels={!showLocked}
         />
