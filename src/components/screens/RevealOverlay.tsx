@@ -58,6 +58,13 @@ function RevealStage({
 
   const targetK = zoneCenter(kicker);
 
+  // Where (horizontally, in % of play area) the keeper should END the dive.
+  // Idle starts centred; once the dive starts, the wrapper slides to here.
+  const diveTargetLeftPct =
+    keeper === 1 || keeper === 4 ? 25
+    : keeper === 3 || keeper === 6 ? 75
+    : 50;
+
   // Times in seconds (Framer takes seconds for delay/duration)
   const tBall = TIMING.revealBallFlightStart / 1000;
   const tBallEnd = TIMING.revealImpactMoment / 1000;
@@ -153,19 +160,29 @@ function RevealStage({
 
           {/* Lottie keeper — idle pre-dive, swaps to dive variant at tKeeper.
               Sized by HEIGHT so idle ↔ dive don't visually resize the
-              character (dive frames span a wider canvas). */}
-          <div
+              character. The wrapper itself also slides from goal-centre to
+              the keeper's chosen zone, so the dive "feels" deliberate. */}
+          <motion.div
             className="absolute pointer-events-none flex justify-center"
             style={{
-              left: "50%",
               top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
               transform: "translate(-50%, -100%)",
               height: `${(115 / PLAY_AREA.height) * 100}%`,
               zIndex: 5,
             }}
+            initial={{ left: "50%" }}
+            animate={{
+              left: keeperAnim === "idle" ? "50%" : `${diveTargetLeftPct}%`,
+            }}
+            transition={{
+              duration:
+                (TIMING.revealImpactMoment - TIMING.revealKeeperDiveStart) /
+                1000,
+              ease: EASING.outExpo,
+            }}
           >
             <LottieKeeper variant={keeperAnim} loop={keeperAnim === "idle"} />
-          </div>
+          </motion.div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}
           <motion.div
