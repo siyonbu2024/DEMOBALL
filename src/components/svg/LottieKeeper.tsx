@@ -7,19 +7,30 @@ import type { LottieRefCurrentProps } from "lottie-react";
  * Lottie-driven keeper animation.
  *
  * Variants map to JSON files under /public:
- *   - "idle"      → /Keeper.json
- *   - "dive-left" → /Keeper_Dive_Left.json
- *   - "dive-right"→ /Keeper_Dive_Left.json (flipped horizontally)
+ *   - "idle"      → /Keeper.json            (383 × 335)
+ *   - "dive-left" → /Keeper_Dive_Left.json  (924 × 335)
+ *   - "dive-right"→ /Keeper_Dive_Left.json  + horizontal flip
  *
- * Component fills 100% of its parent — caller controls sizing via wrapper.
+ * Important: dive frames are ~2.4× wider than idle because the character
+ * travels across the canvas. The component fills the parent's HEIGHT and
+ * grows its own width via aspect-ratio — this way the character stays the
+ * same physical size when swapping idle → dive (caller anchors by height).
  */
 
 export type KeeperAnim = "idle" | "dive-left" | "dive-right";
 
-const SOURCE: Record<KeeperAnim, { src: string; flipX: boolean }> = {
-  idle:         { src: "/Keeper.json",            flipX: false },
-  "dive-left":  { src: "/Keeper_Dive_Left.json",  flipX: false },
-  "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true },
+interface VariantSpec {
+  src: string;
+  flipX: boolean;
+  /** Source canvas dimensions — used to set the wrapper's aspect ratio. */
+  w: number;
+  h: number;
+}
+
+const SOURCE: Record<KeeperAnim, VariantSpec> = {
+  idle:         { src: "/Keeper.json",            flipX: false, w: 383, h: 335 },
+  "dive-left":  { src: "/Keeper_Dive_Left.json",  flipX: false, w: 924, h: 335 },
+  "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true,  w: 924, h: 335 },
 };
 
 interface Props {
@@ -64,7 +75,7 @@ export const LottieKeeper = ({
     rendererSettings?: { preserveAspectRatio: string };
   }> | null>(null);
 
-  const { src, flipX } = SOURCE[variant];
+  const { src, flipX, w, h } = SOURCE[variant];
 
   // Dynamically import lottie-react + animation JSON on mount / variant change.
   useEffect(() => {
@@ -95,23 +106,23 @@ export const LottieKeeper = ({
     else lottieRef.current.play();
   }, [paused, animationData]);
 
+  // Sizing: fill parent's HEIGHT and let aspect-ratio drive the width.
+  // Idle (1.14:1) is near-square; dive (2.76:1) gets a wide box so the
+  // character physically the same size as idle when feet/head are aligned.
+  const sizingStyle: React.CSSProperties = {
+    height: "100%",
+    width: "auto",
+    aspectRatio: `${w} / ${h}`,
+    pointerEvents: "none",
+    transform: flipX ? "scaleX(-1)" : undefined,
+  };
+
   if (!LottieComponent || !animationData) {
-    return (
-      <div className={className} style={{ width: "100%", height: "100%" }} />
-    );
+    return <div className={className} style={sizingStyle} />;
   }
 
   return (
-    <div
-      className={className}
-      style={{
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-        transform: flipX ? "scaleX(-1)" : undefined,
-      }}
-      aria-hidden
-    >
+    <div className={className} style={sizingStyle} aria-hidden>
       <LottieComponent
         animationData={animationData}
         loop={loop}

@@ -151,15 +151,16 @@ function RevealStage({
 
           </svg>
 
-          {/* Lottie keeper — idle pre-dive, swaps to dive variant at tKeeper */}
+          {/* Lottie keeper — idle pre-dive, swaps to dive variant at tKeeper.
+              Sized by HEIGHT so idle ↔ dive don't visually resize the
+              character (dive frames span a wider canvas). */}
           <div
-            className="absolute pointer-events-none"
+            className="absolute pointer-events-none flex justify-center"
             style={{
               left: "50%",
               top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
               transform: "translate(-50%, -100%)",
-              width: `${(140 / PLAY_AREA.width) * 100}%`,
-              aspectRatio: "1 / 1",
+              height: `${(115 / PLAY_AREA.height) * 100}%`,
               zIndex: 5,
             }}
           >

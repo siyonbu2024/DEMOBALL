@@ -173,15 +173,16 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
         <Ball cx={PLAY_AREA.ballStartX} cy={PLAY_AREA.ballStartY} r={BALL_R} />
       </svg>
 
-      {/* Lottie keeper — idle, anchored to goal floor */}
+      {/* Lottie keeper — idle, anchored to goal floor.
+          Sized by HEIGHT so the same component can swap variants without
+          the character physically resizing. */}
       <div
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none flex justify-center"
         style={{
           left: "50%",
           top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
           transform: "translate(-50%, -100%)",
-          width: `${(120 / PLAY_AREA.width) * 100}%`,
-          aspectRatio: "1 / 1",
+          height: `${(115 / PLAY_AREA.height) * 100}%`,
         }}
       >
         <LottieKeeper loop />
