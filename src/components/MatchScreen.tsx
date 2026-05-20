@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { GamePhase, Screen } from "@/lib/types";
 import { TIMING } from "@/lib/timing";
 import { useMatchStore } from "@/store/match-store";
+import { BottomNav } from "./BottomNav";
 import { MuteToggle } from "./MuteToggle";
 import { BracketView } from "./screens/BracketView";
 import { HomeLobby } from "./screens/HomeLobby";
@@ -21,26 +22,44 @@ import { Room32v32 } from "./screens/Room32v32";
 import { WalletScreen } from "./screens/WalletScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { MatchHistoryScreen } from "./screens/MatchHistoryScreen";
+import { MyTicketsScreen } from "./screens/MyTicketsScreen";
+
+const SCREENS_WITH_NAV: Screen[] = [
+  "home",
+  "room-1v1",
+  "room-4v4",
+  "room-8v8",
+  "room-16v16",
+  "room-32v32",
+  "wallet",
+  "settings",
+  "match-history",
+  "my-tickets",
+];
 
 export const MatchScreen = () => {
   const currentScreen = useMatchStore((s) => s.currentScreen);
+  const showNav = SCREENS_WITH_NAV.includes(currentScreen);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center font-sans" style={{ backgroundColor: "#15141f" }}>
-      <main className="w-full max-w-sm flex-1 flex flex-col text-white relative overflow-hidden" style={{ backgroundColor: "#1E1D30" }}>
+      <main className="w-full max-w-sm h-screen flex flex-col text-white relative overflow-hidden" style={{ backgroundColor: "#1E1D30" }}>
         <MuteToggle />
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentScreen}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: TIMING.pageTransition / 1000 }}
-            className="flex-1 flex flex-col"
-          >
-            {renderScreen(currentScreen)}
-          </motion.div>
-        </AnimatePresence>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentScreen}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: TIMING.pageTransition / 1000 }}
+              className="flex-1 flex flex-col"
+            >
+              {renderScreen(currentScreen)}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        {showNav && <BottomNav />}
       </main>
     </div>
   );
@@ -72,6 +91,8 @@ function renderScreen(screen: Screen) {
       return <SettingsScreen />;
     case "match-history":
       return <MatchHistoryScreen />;
+    case "my-tickets":
+      return <MyTicketsScreen />;
   }
 }
 

@@ -146,7 +146,8 @@ export type Screen =
   | "in-match"
   | "wallet"
   | "settings"
-  | "match-history";
+  | "match-history"
+  | "my-tickets";
 
 export interface BracketSlot {
   identity: BotIdentity;

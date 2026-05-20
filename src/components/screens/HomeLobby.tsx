@@ -26,7 +26,47 @@ export const HomeLobby = () => {
   }, [driftRoomAssignments]);
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-5">
+    <div className="flex flex-col">
+      {/* ── Sticky top navbar (Token + History) ── */}
+      <div className="sticky top-0 z-50 backdrop-blur-md bg-[#1E1D30]/85 border-b border-white/10 px-4 py-2.5">
+        <div className="flex gap-2.5">
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => enterScreen("wallet")}
+            className="relative flex-1 overflow-hidden flex items-center gap-2 px-3 py-2 rounded-md bg-gradient-to-br from-amber-600/80 to-orange-800/80 border border-amber-400/40 text-left shadow-lg shadow-amber-900/30"
+          >
+            <div className="text-lg leading-none">🪙</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[9px] uppercase tracking-widest text-amber-100/80 font-bold leading-none">
+                Token
+              </div>
+              <div className="text-sm font-black text-white tabular-nums leading-tight">
+                {tokenBalance.toLocaleString()}
+              </div>
+            </div>
+            <div className="text-white/40 text-base leading-none">›</div>
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => enterScreen("match-history")}
+            className="relative flex-1 overflow-hidden flex items-center gap-2 px-3 py-2 rounded-md bg-gradient-to-br from-slate-600/80 to-slate-800/80 border border-white/15 text-left shadow-lg"
+          >
+            <div className="text-lg leading-none">📊</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[9px] uppercase tracking-widest text-white/60 font-bold leading-none">
+                ประวัติ
+              </div>
+              <div className="text-sm font-black text-white tabular-nums leading-tight">
+                {historyCount} แมตช์
+              </div>
+            </div>
+            <div className="text-white/40 text-base leading-none">›</div>
+          </motion.button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 px-4 py-5">
       {/* Hero banner */}
       <div className="relative rounded-md overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f0a] via-[#0e2a10] to-[#061206]" />
@@ -75,43 +115,6 @@ export const HomeLobby = () => {
 
       {/* Tournament banner */}
       <TournamentBanner />
-
-      {/* Quick actions: wallet + history */}
-      <div className="grid grid-cols-2 gap-3 -mt-1">
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => enterScreen("wallet")}
-          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-md bg-gradient-to-br from-amber-600/80 to-orange-800/80 border border-amber-400/40 text-left shadow-lg shadow-amber-900/30"
-        >
-          <div className="text-2xl">🪙</div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-widest text-amber-100/80 font-bold">
-              Token
-            </div>
-            <div className="text-base font-black text-white tabular-nums leading-tight">
-              {tokenBalance.toLocaleString()}
-            </div>
-          </div>
-          <div className="text-white/40 text-lg">›</div>
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => enterScreen("match-history")}
-          className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-md bg-gradient-to-br from-slate-600/80 to-slate-800/80 border border-white/15 text-left shadow-lg"
-        >
-          <div className="text-2xl">📊</div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-widest text-white/60 font-bold">
-              ประวัติ
-            </div>
-            <div className="text-base font-black text-white tabular-nums leading-tight">
-              {historyCount} แมตช์
-            </div>
-          </div>
-          <div className="text-white/40 text-lg">›</div>
-        </motion.button>
-      </div>
 
       {/* Mode label */}
       <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold px-1">
@@ -191,6 +194,7 @@ export const HomeLobby = () => {
           tagColor="bg-amber-500/30 text-amber-200"
         />
         <TourCard />
+      </div>
       </div>
     </div>
   );
