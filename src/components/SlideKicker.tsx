@@ -173,16 +173,15 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
         <Ball cx={PLAY_AREA.ballStartX} cy={PLAY_AREA.ballStartY} r={BALL_R} />
       </svg>
 
-      {/* Lottie keeper — idle, anchored to goal floor.
-          Sized by HEIGHT so the same component can swap variants without
-          the character physically resizing. */}
+      {/* Lottie keeper — idle, anchored to goal floor. 200 viewBox units
+          matches the size used in TapKeeper and RevealOverlay. */}
       <div
         className="absolute pointer-events-none flex justify-center"
         style={{
           left: "50%",
           top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
           transform: "translate(-50%, -100%)",
-          height: `${(115 / PLAY_AREA.height) * 100}%`,
+          height: `${(200 / PLAY_AREA.height) * 100}%`,
         }}
       >
         <LottieKeeper loop />

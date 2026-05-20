@@ -163,7 +163,10 @@ function RevealStage({
             className="absolute pointer-events-none flex justify-center"
             style={{
               top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
-              height: `${(115 / PLAY_AREA.height) * 100}%`,
+              // 200 viewBox units → keeper character (which occupies the
+              // bottom ~50 % of the 1200×670 Lottie canvas) ends up roughly
+              // 100 SVG units tall, comparable to a single goal zone.
+              height: `${(200 / PLAY_AREA.height) * 100}%`,
               zIndex: 5,
             }}
             initial={{

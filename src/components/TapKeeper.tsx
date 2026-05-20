@@ -111,7 +111,8 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
       </svg>
 
       {/* Lottie keeper — idle only, hidden once dive starts.
-          Sized by HEIGHT so dive/idle variants stay the same character size. */}
+          200 viewBox units matches RevealOverlay so the character looks
+          the same size when the reveal phase starts. */}
       {revealZone === null && (
         <div
           className="absolute pointer-events-none flex justify-center"
@@ -119,7 +120,7 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
             left: "50%",
             top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
             transform: "translate(-50%, -100%)",
-            height: `${(115 / PLAY_AREA.height) * 100}%`,
+            height: `${(200 / PLAY_AREA.height) * 100}%`,
             zIndex: 5,
           }}
         >
