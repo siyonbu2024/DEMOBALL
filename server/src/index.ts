@@ -8,6 +8,7 @@
 
 import type { ClientToServer, ServerToClient } from "@shared/protocol";
 import { verifyToken, extractToken } from "./auth";
+import { handleWallet } from "./wallet";
 
 export interface Env {
   ENVIRONMENT: "staging" | "production";
@@ -39,6 +40,11 @@ export default {
 
     if (url.pathname === "/ws") {
       return handleWebSocket(req, env);
+    }
+
+    if (url.pathname === "/me/wallet" && req.method === "GET") {
+      const res = await handleWallet(req, env);
+      return withCors(res, req, env);
     }
 
     return json({ error: "not_found", path: url.pathname }, env, req, 404);
@@ -134,7 +140,20 @@ function corsPreflight(req: Request, env: Env): Response {
   });
 }
 
-function corsHeaders(req: Request, env: Env): HeadersInit {
+/** Re-emit an existing Response with our CORS headers merged in. */
+function withCors(res: Response, req: Request, env: Env): Response {
+  const merged = new Headers(res.headers);
+  for (const [k, v] of Object.entries(corsHeaders(req, env))) {
+    merged.set(k, v as string);
+  }
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers: merged,
+  });
+}
+
+function corsHeaders(req: Request, env: Env): Record<string, string> {
   const origin = req.headers.get("Origin") ?? "";
   const allowed = isOriginAllowed(origin, env);
   return {
