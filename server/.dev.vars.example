@@ -1,0 +1,9 @@
+# Copy to .dev.vars (gitignored) and fill in for local `wrangler dev`.
+# Production / staging deployments use `wrangler secret put` instead.
+
+SUPABASE_URL=https://rqdeykrlkymktzlmnygk.supabase.co
+SUPABASE_ANON_KEY=ey...
+SUPABASE_SERVICE_ROLE_KEY=ey...
+
+LINE_CHANNEL_ID=
+LINE_CHANNEL_SECRET=

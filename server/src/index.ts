@@ -7,6 +7,7 @@
  */
 
 import type { ClientToServer, ServerToClient } from "@shared/protocol";
+import { verifyToken, extractToken } from "./auth";
 
 export interface Env {
   ENVIRONMENT: "staging" | "production";
@@ -48,7 +49,7 @@ export default {
 // WebSocket — stub echo handler
 // ────────────────────────────────────────────────────────────────────
 
-function handleWebSocket(req: Request, env: Env): Response {
+async function handleWebSocket(req: Request, env: Env): Promise<Response> {
   const upgrade = req.headers.get("Upgrade");
   if (upgrade !== "websocket") {
     return new Response("expected websocket upgrade", { status: 426 });
@@ -58,6 +59,17 @@ function handleWebSocket(req: Request, env: Env): Response {
   const origin = req.headers.get("Origin") ?? "";
   if (!isOriginAllowed(origin, env)) {
     return new Response(`origin ${origin} not allowed`, { status: 403 });
+  }
+
+  // Require a Supabase JWT on the handshake. Without it, no socket is
+  // opened — saves us from any per-message auth gating.
+  const token = extractToken(req);
+  if (!token) {
+    return new Response("missing token query param", { status: 401 });
+  }
+  const authed = await verifyToken(token, env);
+  if (!authed) {
+    return new Response("invalid token", { status: 401 });
   }
 
   const pair = new WebSocketPair();
