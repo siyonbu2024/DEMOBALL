@@ -6,18 +6,31 @@ import type { LottieRefCurrentProps } from "lottie-react";
 /**
  * Lottie-driven shooter animation.
  *
- * Variants map to JSON files under /public:
- *   - "idle"     → /Shooter_Idle.json      (252 × 388) — loop
- *   - "shooting" → /Shooter_Shooting.json  (252 × 388) — one-shot
+ * Each variant has a separate JSON per side. The two "_enemy" files differ
+ * from the user-side originals only in kit colour, so swapping the source
+ * is how we distinguish friend vs opponent (CSS filter recolouring didn't
+ * read well on the image-based Lotties).
  *
- * Component fills 100% of its parent — caller controls size via wrapper.
+ *   side="user"   variant="idle"     → /Shooter_Idle.json
+ *   side="user"   variant="shooting" → /Shooter_Shooting.json
+ *   side="enemy"  variant="idle"     → /Shooter_Idle_enemy.json
+ *   side="enemy"  variant="shooting" → /Shooter_Shooting_enemy.json
+ *
+ * Component fills 100 % of its parent — caller controls size via wrapper.
  */
 
 export type ShooterAnim = "idle" | "shooting";
+export type ShooterSide = "user" | "enemy";
 
-const SOURCE: Record<ShooterAnim, { src: string }> = {
-  idle:     { src: "/Shooter_Idle.json" },
-  shooting: { src: "/Shooter_Shooting.json" },
+const SOURCE: Record<ShooterSide, Record<ShooterAnim, string>> = {
+  user: {
+    idle:     "/Shooter_Idle.json",
+    shooting: "/Shooter_Shooting.json",
+  },
+  enemy: {
+    idle:     "/Shooter_Idle_enemy.json",
+    shooting: "/Shooter_Shooting_enemy.json",
+  },
 };
 
 const cache = new Map<string, Promise<unknown>>();
@@ -28,30 +41,27 @@ function loadJson(src: string): Promise<unknown> {
   return cache.get(src)!;
 }
 
-/** Prewarm all variants the first time any LottieShooter mounts. */
+/** Prewarm every kit × variant once on first mount. */
 let prewarmed = false;
 function prewarmAllVariants(): void {
   if (prewarmed || typeof window === "undefined") return;
   prewarmed = true;
-  for (const variant of Object.keys(SOURCE) as ShooterAnim[]) {
-    void loadJson(SOURCE[variant].src);
+  for (const side of Object.keys(SOURCE) as ShooterSide[]) {
+    for (const v of Object.keys(SOURCE[side]) as ShooterAnim[]) {
+      void loadJson(SOURCE[side][v]);
+    }
   }
 }
 
 interface Props {
   variant?: ShooterAnim;
+  side?: ShooterSide;
   /** Loop the animation. Defaults: idle loops, shooting one-shots. */
   loop?: boolean;
   /** Pause the playhead. */
   paused?: boolean;
   /** Mirror horizontally — use for right-side shots. */
   flipX?: boolean;
-  /**
-   * Recolor the character via CSS hue-rotate. Use "blue" for the user's
-   * side so the kit reads as friendly. The Lottie itself is image-based,
-   * so this is the best lever we have without re-rendering the art.
-   */
-  tint?: "blue" | "none";
   /** Called once the animation reaches its last frame (one-shot mode). */
   onComplete?: () => void;
   className?: string;
@@ -59,10 +69,10 @@ interface Props {
 
 export const LottieShooter = ({
   variant = "idle",
+  side = "user",
   loop = variant === "idle",
   paused = false,
   flipX = false,
-  tint = "none",
   onComplete,
   className = "",
 }: Props) => {
@@ -80,9 +90,8 @@ export const LottieShooter = ({
     rendererSettings?: { preserveAspectRatio: string };
   }> | null>(null);
 
-  const { src } = SOURCE[variant];
+  const src = SOURCE[side][variant];
 
-  // Warm all variants once so subsequent swaps are instant.
   useEffect(() => {
     prewarmAllVariants();
   }, []);
@@ -119,11 +128,6 @@ export const LottieShooter = ({
     );
   }
 
-  // Source jersey is red/orange. hue-rotate(190deg) + saturate(1.1) maps
-  // it to a friendly blue while keeping skin tones reasonable.
-  const filter =
-    tint === "blue" ? "hue-rotate(190deg) saturate(1.1)" : undefined;
-
   return (
     <div
       className={className}
@@ -132,7 +136,6 @@ export const LottieShooter = ({
         height: "100%",
         pointerEvents: "none",
         transform: flipX ? "scaleX(-1)" : undefined,
-        filter,
       }}
       aria-hidden
     >

@@ -125,13 +125,12 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
             zIndex: 5,
           }}
         >
-          <LottieKeeper loop tint="yellow" />
+          <LottieKeeper loop />
         </div>
       )}
 
-      {/* Opponent shooter — idle, mirrors the SlideKicker layout so both
-          rounds share the same scene composition. Default (red) kit
-          marks them as the opposing side. */}
+      {/* Opponent shooter — uses the _enemy JSON so the kit reads as
+          the opposing side. */}
       <div
         className="absolute pointer-events-none"
         style={{
@@ -143,7 +142,7 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
           zIndex: 4,
         }}
       >
-        <LottieShooter variant="idle" />
+        <LottieShooter variant="idle" side="enemy" />
       </div>
 
       {/* Tappable zone overlay (positioned in % over the SVG) */}

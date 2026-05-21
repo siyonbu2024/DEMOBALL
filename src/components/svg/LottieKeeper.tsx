@@ -44,8 +44,6 @@ interface Props {
   loop?: boolean;
   /** Pause the playhead — useful for previewing/debugging. */
   paused?: boolean;
-  /** Recolor via CSS hue-rotate. "yellow" for the user side. */
-  tint?: "yellow" | "none";
   /** Called once when the animation completes (one-shot mode). */
   onComplete?: () => void;
   className?: string;
@@ -81,7 +79,6 @@ export const LottieKeeper = ({
   variant = "idle",
   loop = variant === "idle",
   paused = false,
-  tint = "none",
   onComplete,
   className = "",
 }: Props) => {
@@ -149,17 +146,12 @@ export const LottieKeeper = ({
   // All variants share the same canvas, so a single aspect-ratio box and
   // letterboxed "meet" rendering keep the character pixel-aligned across
   // a variant swap.
-  // Source jersey is green. hue-rotate(-50deg) shifts it to yellow.
-  const filter =
-    tint === "yellow" ? "hue-rotate(-50deg) saturate(1.3)" : undefined;
-
   const sizingStyle: React.CSSProperties = {
     height: "100%",
     width: "auto",
     aspectRatio: `${STABLE_ASPECT}`,
     pointerEvents: "none",
     transform: displayedSpec.flipX ? "scaleX(-1)" : undefined,
-    filter,
   };
 
   const preserveAspectRatio = "xMidYMid meet";

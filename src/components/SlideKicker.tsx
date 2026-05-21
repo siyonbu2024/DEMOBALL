@@ -126,7 +126,7 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
           zIndex: 4,
         }}
       >
-        <LottieShooter variant="idle" tint="blue" />
+        <LottieShooter variant="idle" side="user" />
       </div>
 
       {/* Lottie keeper — idle, anchored to goal floor. 200 viewBox units
