@@ -76,11 +76,17 @@ function RevealStage({
     : 50;
 
   // Vertical landing. Top-row zones (1/2/3) → keeper jumps so the
-  // bottom of the wrapper sits at the top-row's lower edge (y=120).
-  // Bottom-row zones (4/5/6) → wrapper bottom stays at the goal floor (y=240).
+  // bottom of the wrapper sits at the top-row's lower edge (y=120 + offset).
+  // Bottom-row zones (4/5/6) → wrapper bottom rests slightly below the
+  // goal floor so the feet read as inside the pitch.
+  // KEEPER_ANCHOR_OFFSET matches the SlideKicker/TapKeeper idle baseline.
+  const KEEPER_ANCHOR_OFFSET = 25;
   const isTopRowZone = keeper === 1 || keeper === 2 || keeper === 3;
   const diveTargetTopPct =
-    (isTopRowZone ? PLAY_AREA.goalHeight / 2 : PLAY_AREA.goalHeight) /
+    ((isTopRowZone
+      ? PLAY_AREA.goalHeight / 2
+      : PLAY_AREA.goalHeight) +
+      KEEPER_ANCHOR_OFFSET) /
     PLAY_AREA.height *
     100;
 
@@ -196,7 +202,7 @@ function RevealStage({
             }}
             initial={{
               left: "50%",
-              top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
+              top: `${((PLAY_AREA.goalHeight + KEEPER_ANCHOR_OFFSET) / PLAY_AREA.height) * 100}%`,
               x: "-50%",
               y: "-100%",
             }}
@@ -204,7 +210,7 @@ function RevealStage({
               left: keeperAnim === "idle" ? "50%" : `${diveTargetLeftPct}%`,
               top:
                 keeperAnim === "idle"
-                  ? `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`
+                  ? `${((PLAY_AREA.goalHeight + KEEPER_ANCHOR_OFFSET) / PLAY_AREA.height) * 100}%`
                   : `${diveTargetTopPct}%`,
               x: "-50%",
               y: "-100%",
