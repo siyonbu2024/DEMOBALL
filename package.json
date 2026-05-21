@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "server:dev": "npm --prefix server run dev",
+    "server:typecheck": "npm --prefix server run typecheck",
+    "server:deploy:staging": "npm --prefix server run deploy:staging",
+    "server:deploy:production": "npm --prefix server run deploy:production"
   },
   "dependencies": {
     "clsx": "^2.1.1",

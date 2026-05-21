@@ -1,0 +1,40 @@
+# Cloudflare Worker config for football-demo-server.
+# Two environments: staging + production. Both share the same Worker
+# code; secrets and DO bindings are env-scoped.
+#
+# Per-environment secrets (set via `wrangler secret put <NAME> --env <env>`):
+#   - SUPABASE_URL
+#   - SUPABASE_ANON_KEY
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - LINE_CHANNEL_ID
+#   - LINE_CHANNEL_SECRET
+#
+# CORS origins are declared as `vars` (not secrets) so they're visible
+# in the dashboard.
+
+name = "football-demo-server"
+main = "src/index.ts"
+compatibility_date = "2026-05-21"
+compatibility_flags = ["nodejs_compat"]
+
+# ── Local dev ────────────────────────────────────────────────────────
+[dev]
+ip = "127.0.0.1"
+port = 8787
+local_protocol = "http"
+
+# ── Staging environment ──────────────────────────────────────────────
+[env.staging]
+name = "football-demo-server-staging"
+
+  [env.staging.vars]
+  ENVIRONMENT = "staging"
+  ALLOWED_ORIGINS = "http://localhost:3000,https://staging.football-demo.example.com"
+
+# ── Production environment ───────────────────────────────────────────
+[env.production]
+name = "football-demo-server"
+
+  [env.production.vars]
+  ENVIRONMENT = "production"
+  ALLOWED_ORIGINS = "https://football-demo.example.com"
