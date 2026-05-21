@@ -7,16 +7,17 @@ import type { LottieRefCurrentProps } from "lottie-react";
  * Lottie-driven keeper animation.
  *
  * Variants map to JSON files under /public:
- *   - "idle"      → /Keeper_Idle.json       (1200 × 670)
- *   - "dive-left" → /Keeper_Dive_Left.json  (1200 × 670)
- *   - "dive-right"→ /Keeper_Dive_Left.json  + horizontal flip
+ *   - "idle"        → /Keeper_Idle.json         (1200 × 670)
+ *   - "dive-left"   → /Keeper_Dive_Left.json    (1200 × 670)
+ *   - "dive-right"  → /Keeper_Dive_Left.json    + horizontal flip
+ *   - "dive-center" → /Keeper_Dive_Center.json  (1200 × 670)
  *
- * Both files now share the same canvas size, so swapping variants no
- * longer shifts the character — we can render them all with
- * preserveAspectRatio "meet" and a single shared aspect ratio.
+ * All files share the same canvas size, so swapping variants no longer
+ * shifts the character — we can render them with preserveAspectRatio
+ * "meet" and a single shared aspect ratio.
  */
 
-export type KeeperAnim = "idle" | "dive-left" | "dive-right";
+export type KeeperAnim = "idle" | "dive-left" | "dive-right" | "dive-center";
 
 interface VariantSpec {
   src: string;
@@ -27,9 +28,10 @@ interface VariantSpec {
 }
 
 const SOURCE: Record<KeeperAnim, VariantSpec> = {
-  idle:         { src: "/Keeper_Idle.json",       flipX: false, w: 1200, h: 670 },
-  "dive-left":  { src: "/Keeper_Dive_Left.json",  flipX: false, w: 1200, h: 670 },
-  "dive-right": { src: "/Keeper_Dive_Left.json",  flipX: true,  w: 1200, h: 670 },
+  idle:          { src: "/Keeper_Idle.json",         flipX: false, w: 1200, h: 670 },
+  "dive-left":   { src: "/Keeper_Dive_Left.json",    flipX: false, w: 1200, h: 670 },
+  "dive-right":  { src: "/Keeper_Dive_Left.json",    flipX: true,  w: 1200, h: 670 },
+  "dive-center": { src: "/Keeper_Dive_Center.json",  flipX: false, w: 1200, h: 670 },
 };
 
 /** All variants share the same canvas now, so one aspect ratio fits all. */

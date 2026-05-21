@@ -94,8 +94,17 @@ function RevealStage({
     const t = setTimeout(() => {
       setActiveKeeper(keeper);
       setActivePose(isGoal ? "beaten" : "caught");
-      const isRight = keeper === 3 || keeper === 6;
-      setKeeperAnim(isRight ? "dive-right" : "dive-left");
+      // Map the keeper's chosen zone to a dive variant:
+      //   left column (1, 4)  → dive-left
+      //   centre column (2,5) → dive-center
+      //   right column (3, 6) → dive-right
+      const next: KeeperAnim =
+        keeper === 1 || keeper === 4
+          ? "dive-left"
+          : keeper === 3 || keeper === 6
+          ? "dive-right"
+          : "dive-center";
+      setKeeperAnim(next);
     }, TIMING.revealKeeperDiveStart);
     return () => clearTimeout(t);
   }, [keeper, isGoal]);
