@@ -11,6 +11,7 @@ import { ScoreHeader } from "../ScoreHeader";
 import { Goal } from "../svg/Goal";
 import { Keeper } from "../svg/Keeper";
 import { LottieKeeper, type KeeperAnim } from "../svg/LottieKeeper";
+import { LottieShooter } from "../svg/LottieShooter";
 import { Pitch } from "../svg/Pitch";
 import { Shooter } from "../svg/Shooter";
 
@@ -173,14 +174,11 @@ function RevealStage({
               <Keeper divingTo={activeKeeper} pose={activePose} />
             </g>
 
-            {/* Shooter — windup → follow-through, fades after impact */}
-            <motion.g
-              initial={{ opacity: 1 }}
-              animate={{ opacity: [1, 1, 0.55] }}
-              transition={{ duration: tBallEnd, times: [0, 0.7, 1] }}
-            >
+            {/* Static SVG shooter hidden — Lottie overlay below plays the
+                full shooting animation. Kept in tree for layout parity. */}
+            <g style={{ opacity: 0 }}>
               <Shooter pose={shooterPose} />
-            </motion.g>
+            </g>
 
           </svg>
 
@@ -223,6 +221,23 @@ function RevealStage({
               loop={keeperAnim === "idle"}
             />
           </motion.div>
+
+          {/* Lottie shooter — plays the full windup→kick→follow-through arc.
+              Positioned so feet sit just below the goal in the run-up area.
+              Sized by HEIGHT in viewBox units, mirroring the static Shooter. */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: `${(PLAY_AREA.ballStartX / PLAY_AREA.width) * 100}%`,
+              top: `${((PLAY_AREA.height - 10) / PLAY_AREA.height) * 100}%`,
+              transform: "translate(-50%, -100%)",
+              height: `${(180 / PLAY_AREA.height) * 100}%`,
+              aspectRatio: `${252 / 388}`,
+              zIndex: 4,
+            }}
+          >
+            <LottieShooter />
+          </div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}
           <motion.div
