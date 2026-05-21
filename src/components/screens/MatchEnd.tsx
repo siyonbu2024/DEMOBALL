@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { play } from "@/lib/sound";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { GameButton } from "@/components/GameButton";
-import { RAKE_RATE_1V1 } from "@/lib/types";
+import { RAKE_RATE_1V1 } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 export const MatchEnd = () => {

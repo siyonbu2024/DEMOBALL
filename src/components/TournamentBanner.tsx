@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { play } from "@/lib/sound";
-import { TOURNAMENT_RAKE_RATE, type Tournament } from "@/lib/types";
+import { TOURNAMENT_RAKE_RATE, type Tournament } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 import { TicketPurchaseModal } from "./TicketPurchaseModal";
 

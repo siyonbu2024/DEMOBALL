@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { getCurrentRoundIndex, getNextKicker } from "@/lib/game-logic";
+import { getCurrentRoundIndex, getNextKicker } from "@shared/game-logic";
 import { play } from "@/lib/sound";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 
 export const RoundIntro = () => {

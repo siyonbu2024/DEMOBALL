@@ -1,4 +1,4 @@
-import { PLAY_AREA } from "@/lib/zone-geometry";
+import { PLAY_AREA } from "@shared/zone-geometry";
 
 /**
  * Penalty kicker character. Rendered as an SVG <image> referencing

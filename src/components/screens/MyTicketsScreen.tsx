@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import type { Tournament, TournamentTicket } from "@/lib/types";
+import type { Tournament, TournamentTicket } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 interface TicketRow {

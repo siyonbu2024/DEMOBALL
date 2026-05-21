@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getBotById, type BotIdentity } from "@/lib/bot-identities";
+import { getBotById, type BotIdentity } from "@shared/bot-identities";
 import { GameButton } from "@/components/GameButton";
 import { useMatchStore } from "@/store/match-store";
 

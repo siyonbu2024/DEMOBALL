@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
-import type { RoundOutcome } from "@/lib/types";
+import type { RoundOutcome } from "@shared/types";
 
 type SlotStatus = RoundOutcome | "pending";
 

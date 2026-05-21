@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { getBotById, type BotIdentity } from "@/lib/bot-identities";
+import { getBotById, type BotIdentity } from "@shared/bot-identities";
 import { GameButton } from "@/components/GameButton";
-import { BET_TIERS, RAKE_RATE_1V1 } from "@/lib/types";
+import { BET_TIERS, RAKE_RATE_1V1 } from "@shared/types";
 import { play } from "@/lib/sound";
 import { useMatchStore } from "@/store/match-store";
 

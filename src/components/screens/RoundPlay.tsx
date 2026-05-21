@@ -5,9 +5,9 @@ import {
   aiPickZone,
   getNextKicker,
   getPlayerHistory,
-} from "@/lib/game-logic";
-import { jitteredThinkingMs } from "@/lib/match-pairing";
-import { TIMING } from "@/lib/timing";
+} from "@shared/game-logic";
+import { jitteredThinkingMs } from "@shared/match-pairing";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 import { ScoreHeader } from "../ScoreHeader";
 import { SlideKicker } from "../SlideKicker";

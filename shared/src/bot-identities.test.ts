@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { BOT_POOL, getBotById, getRandomBots } from "./bot-identities";
 
 describe("BOT_POOL", () => {
-  it("has 30 entries", () => {
-    expect(BOT_POOL).toHaveLength(30);
+  it("has 32 entries", () => {
+    expect(BOT_POOL).toHaveLength(32);
   });
 
   it("all ids are unique", () => {

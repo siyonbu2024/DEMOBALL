@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { TIMING } from "@/lib/timing";
-import type { Screen } from "@/lib/types";
+import { TIMING } from "@shared/timing";
+import type { Screen } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 type TabKey = "rooms" | "tickets" | "tournament" | "profile";

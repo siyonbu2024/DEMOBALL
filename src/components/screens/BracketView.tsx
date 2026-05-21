@@ -2,13 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo } from "react";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { GameButton } from "@/components/GameButton";
 import type {
   BracketMatch,
   BracketSlot,
   BracketState,
-} from "@/lib/types";
+} from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 type FlowState =

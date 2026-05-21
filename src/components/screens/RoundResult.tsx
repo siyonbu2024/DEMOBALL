@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 
 export const RoundResult = () => {

@@ -8,10 +8,18 @@ export default defineConfig({
         find: /^@\//,
         replacement: fileURLToPath(new URL("./src/", import.meta.url)),
       },
+      {
+        find: /^@shared\//,
+        replacement: fileURLToPath(new URL("./shared/src/", import.meta.url)),
+      },
     ],
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "shared/src/**/*.test.ts",
+    ],
   },
 });

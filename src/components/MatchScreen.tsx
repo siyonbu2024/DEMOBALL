@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import type { GamePhase, Screen } from "@/lib/types";
-import { TIMING } from "@/lib/timing";
+import type { GamePhase, Screen } from "@shared/types";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 import { BottomNav } from "./BottomNav";
 import { MuteToggle } from "./MuteToggle";

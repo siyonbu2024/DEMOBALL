@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { play } from "@/lib/sound";
-import { EASING, TIMING } from "@/lib/timing";
-import type { Zone } from "@/lib/types";
-import { PLAY_AREA, zoneCenter } from "@/lib/zone-geometry";
+import { EASING, TIMING } from "@shared/timing";
+import type { Zone } from "@shared/types";
+import { PLAY_AREA, zoneCenter } from "@shared/zone-geometry";
 import { useMatchStore } from "@/store/match-store";
 import { ScoreHeader } from "../ScoreHeader";
 import { Goal } from "../svg/Goal";

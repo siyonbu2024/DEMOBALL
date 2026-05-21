@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { play } from "@/lib/sound";
-import { TIMING } from "@/lib/timing";
-import { TOURNAMENT_RAKE_RATE, type Tournament } from "@/lib/types";
+import { TIMING } from "@shared/timing";
+import { TOURNAMENT_RAKE_RATE, type Tournament } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 import { GameButton } from "./GameButton";
 

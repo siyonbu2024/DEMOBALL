@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import type { MatchHistoryEntry } from "@/lib/types";
+import type { MatchHistoryEntry } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 type Filter = "all" | "win" | "loss";

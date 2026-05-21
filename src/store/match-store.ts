@@ -4,19 +4,19 @@ import {
   createInitialMatchState,
   getNextKicker,
   isMatchOver,
-} from "@/lib/game-logic";
+} from "@shared/game-logic";
 import {
   BOT_POOL,
   getBotById,
   type BotIdentity,
-} from "@/lib/bot-identities";
+} from "@shared/bot-identities";
 import {
   createBracketParticipants,
   createMatchOpponent,
   createMatchOpponentFor,
   simulateBotMatch,
   type MatchOpponent,
-} from "@/lib/match-pairing";
+} from "@shared/match-pairing";
 import { preloadAll, setMuted as soundSetMuted } from "@/lib/sound";
 import type {
   BracketMatch,
@@ -32,9 +32,9 @@ import type {
   Tournament,
   TournamentTicket,
   Zone,
-} from "@/lib/types";
-import { RAKE_RATE_1V1 } from "@/lib/types";
-import { seedTournaments } from "@/lib/tournaments-seed";
+} from "@shared/types";
+import { RAKE_RATE_1V1 } from "@shared/types";
+import { seedTournaments } from "@shared/tournaments-seed";
 
 type RoomKey = "1v1" | "4v4" | "8v8" | "16v16" | "32v32";
 

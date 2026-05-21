@@ -1,7 +1,7 @@
 "use client";
 
-import { ALL_ZONES, type Zone } from "@/lib/types";
-import { PLAY_AREA, zoneRect } from "@/lib/zone-geometry";
+import { ALL_ZONES, type Zone } from "@shared/types";
+import { PLAY_AREA, zoneRect } from "@shared/zone-geometry";
 
 const POST = 9;
 

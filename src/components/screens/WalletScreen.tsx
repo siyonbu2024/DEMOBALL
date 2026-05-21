@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { GameButton } from "@/components/GameButton";
 import { play } from "@/lib/sound";
-import { TIMING } from "@/lib/timing";
-import { TOKEN_PACKAGES, type TokenPackage, type TokenTxType } from "@/lib/types";
+import { TIMING } from "@shared/timing";
+import { TOKEN_PACKAGES, type TokenPackage, type TokenTxType } from "@shared/types";
 import { useMatchStore } from "@/store/match-store";
 
 type Tab = "deposit" | "withdraw" | "history";

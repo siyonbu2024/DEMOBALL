@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-import { TIMING } from "@/lib/timing";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 
 const REVEAL_OPP_AT_MS = 400;

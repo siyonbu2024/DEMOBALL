@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { Zone } from "@/lib/types";
-import { zoneCenter } from "@/lib/zone-geometry";
-import { PLAY_AREA } from "@/lib/zone-geometry";
+import type { Zone } from "@shared/types";
+import { zoneCenter } from "@shared/zone-geometry";
+import { PLAY_AREA } from "@shared/zone-geometry";
 
 interface Props {
   /** If set, the keeper dives toward this zone. Null = idle at center. */

@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { play } from "@/lib/sound";
-import { TIMING } from "@/lib/timing";
-import { ALL_ZONES, type Zone } from "@/lib/types";
-import { PLAY_AREA, zoneRect } from "@/lib/zone-geometry";
+import { TIMING } from "@shared/timing";
+import { ALL_ZONES, type Zone } from "@shared/types";
+import { PLAY_AREA, zoneRect } from "@shared/zone-geometry";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
 import { LottieKeeper } from "./svg/LottieKeeper";

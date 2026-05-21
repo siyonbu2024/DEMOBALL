@@ -1,6 +1,6 @@
 "use client";
 
-import { PLAY_AREA } from "@/lib/zone-geometry";
+import { PLAY_AREA } from "@shared/zone-geometry";
 
 export const Pitch = () => {
   const pY = PLAY_AREA.goalHeight;

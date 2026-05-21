@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { getBotById, type BotIdentity } from "@/lib/bot-identities";
-import { TIMING } from "@/lib/timing";
+import { getBotById, type BotIdentity } from "@shared/bot-identities";
+import { TIMING } from "@shared/timing";
 import { useMatchStore } from "@/store/match-store";
 import { TournamentBanner } from "../TournamentBanner";
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { BOT_POOL } from "@/lib/bot-identities";
+import { BOT_POOL } from "@shared/bot-identities";
 import { getInitialMatchStoreState, useMatchStore } from "./match-store";
 
 beforeEach(() => {
@@ -48,12 +48,13 @@ describe("match-store: room assignments", () => {
   it("initializeRoomAssignments respects spec ranges per room", () => {
     useMatchStore.getState().initializeRoomAssignments();
     const ra = useMatchStore.getState().roomAssignments;
-    expect(ra["1v1"].length).toBeGreaterThanOrEqual(12);
-    expect(ra["1v1"].length).toBeLessThanOrEqual(35);
-    expect(ra["4v4"].length).toBeGreaterThanOrEqual(8);
-    expect(ra["4v4"].length).toBeLessThanOrEqual(20);
-    expect(ra["8v8"].length).toBeGreaterThanOrEqual(5);
-    expect(ra["8v8"].length).toBeLessThanOrEqual(15);
+    // Ranges per generateBucketSizes — see src/store/match-store.ts
+    expect(ra["1v1"].length).toBeGreaterThanOrEqual(10);
+    expect(ra["1v1"].length).toBeLessThanOrEqual(14);
+    expect(ra["4v4"].length).toBeGreaterThanOrEqual(6);
+    expect(ra["4v4"].length).toBeLessThanOrEqual(9);
+    expect(ra["8v8"].length).toBeGreaterThanOrEqual(9); // 32 - 14 - 9 = 9 min
+    expect(ra["8v8"].length).toBeLessThanOrEqual(16); // 32 - 10 - 6 = 16 max
   });
 
   it("initializeRoomAssignments produces unique bot ids across all buckets", () => {
@@ -109,7 +110,7 @@ describe("match-store: 1v1 flow goes through matchmaking", () => {
     const s = useMatchStore.getState();
     expect(s.currentScreen).toBe("matchmaking");
     expect(s.currentOpponent).not.toBeNull();
-    expect(s.currentMatchContext).toEqual({ type: "quick-1v1" });
+    expect(s.currentMatchContext).toEqual({ type: "quick-1v1", entryFee: 100, pot: 200 });
   });
 
   it("startSpecificMatch1v1 lands on matchmaking with chosen bot", () => {
@@ -225,7 +226,7 @@ describe("match-store: replay / exit", () => {
     s.replayMatch();
     const after = useMatchStore.getState();
     expect(after.matchState.rounds).toHaveLength(0);
-    expect(after.currentMatchContext).toEqual({ type: "quick-1v1" });
+    expect(after.currentMatchContext).toMatchObject({ type: "quick-1v1" });
     expect(after.currentOpponent).not.toBeNull();
     expect(after.currentScreen).toBe("matchmaking");
   });
