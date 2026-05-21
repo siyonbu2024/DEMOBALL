@@ -129,7 +129,7 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
         <LottieShooter variant="idle" side="user" />
       </div>
 
-      {/* Lottie keeper — idle, anchored to goal floor. 200 viewBox units
+      {/* Lottie keeper — idle, anchored to goal floor. 240 viewBox units
           matches the size used in TapKeeper and RevealOverlay. */}
       <div
         className="absolute pointer-events-none flex justify-center"
@@ -137,7 +137,7 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
           left: "50%",
           top: `${(PLAY_AREA.goalHeight / PLAY_AREA.height) * 100}%`,
           transform: "translate(-50%, -100%)",
-          height: `${(200 / PLAY_AREA.height) * 100}%`,
+          height: `${(240 / PLAY_AREA.height) * 100}%`,
         }}
       >
         <LottieKeeper loop />
