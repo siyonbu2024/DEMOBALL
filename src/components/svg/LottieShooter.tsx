@@ -44,6 +44,8 @@ interface Props {
   loop?: boolean;
   /** Pause the playhead. */
   paused?: boolean;
+  /** Mirror horizontally — use for right-side shots. */
+  flipX?: boolean;
   /** Called once the animation reaches its last frame (one-shot mode). */
   onComplete?: () => void;
   className?: string;
@@ -53,6 +55,7 @@ export const LottieShooter = ({
   variant = "idle",
   loop = variant === "idle",
   paused = false,
+  flipX = false,
   onComplete,
   className = "",
 }: Props) => {
@@ -112,7 +115,12 @@ export const LottieShooter = ({
   return (
     <div
       className={className}
-      style={{ width: "100%", height: "100%", pointerEvents: "none" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        transform: flipX ? "scaleX(-1)" : undefined,
+      }}
       aria-hidden
     >
       <LottieComponent

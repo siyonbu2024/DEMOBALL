@@ -222,20 +222,42 @@ function RevealStage({
             />
           </motion.div>
 
-          {/* Lottie shooter — plays the full windup→kick→follow-through arc. */}
-          <div
+          {/* Lottie shooter — plays the full windup→kick→follow-through arc.
+              Mirrors for right-column kicks and steps forward slightly
+              during the windup so the kick has a sense of momentum. */}
+          <motion.div
             className="absolute pointer-events-none"
             style={{
               left: `${(PLAY_AREA.ballStartX / PLAY_AREA.width) * 100}%`,
-              top: `${((PLAY_AREA.height - 10) / PLAY_AREA.height) * 100}%`,
-              transform: "translate(-50%, -100%)",
               height: `${(180 / PLAY_AREA.height) * 100}%`,
               aspectRatio: `${252 / 388}`,
               zIndex: 4,
             }}
+            initial={{
+              top: `${((PLAY_AREA.height - 10) / PLAY_AREA.height) * 100}%`,
+              x: "-50%",
+              y: "-100%",
+            }}
+            animate={{
+              // Move 35 viewBox units forward (toward the goal) by the
+              // moment the ball leaves the foot.
+              top: `${((PLAY_AREA.height - 10 - 35) / PLAY_AREA.height) * 100}%`,
+              x: "-50%",
+              y: "-100%",
+            }}
+            transition={{
+              delay: TIMING.revealCharacterWindup / 1000,
+              duration:
+                (TIMING.revealImpactMoment - TIMING.revealCharacterWindup) /
+                1000,
+              ease: EASING.outExpo,
+            }}
           >
-            <LottieShooter variant="shooting" />
-          </div>
+            <LottieShooter
+              variant="shooting"
+              flipX={kicker === 3 || kicker === 6}
+            />
+          </motion.div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}
           <motion.div
