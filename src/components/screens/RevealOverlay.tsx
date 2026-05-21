@@ -219,6 +219,7 @@ function RevealStage({
             <LottieKeeper
               variant={keeperAnim}
               loop={keeperAnim === "idle"}
+              tint={userIsKicker ? "none" : "yellow"}
             />
           </motion.div>
 
@@ -256,6 +257,7 @@ function RevealStage({
             <LottieShooter
               variant="shooting"
               flipX={kicker === 3 || kicker === 6}
+              tint={userIsKicker ? "blue" : "none"}
             />
           </motion.div>
 

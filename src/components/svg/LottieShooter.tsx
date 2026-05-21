@@ -46,6 +46,12 @@ interface Props {
   paused?: boolean;
   /** Mirror horizontally — use for right-side shots. */
   flipX?: boolean;
+  /**
+   * Recolor the character via CSS hue-rotate. Use "blue" for the user's
+   * side so the kit reads as friendly. The Lottie itself is image-based,
+   * so this is the best lever we have without re-rendering the art.
+   */
+  tint?: "blue" | "none";
   /** Called once the animation reaches its last frame (one-shot mode). */
   onComplete?: () => void;
   className?: string;
@@ -56,6 +62,7 @@ export const LottieShooter = ({
   loop = variant === "idle",
   paused = false,
   flipX = false,
+  tint = "none",
   onComplete,
   className = "",
 }: Props) => {
@@ -112,6 +119,11 @@ export const LottieShooter = ({
     );
   }
 
+  // Source jersey is red/orange. hue-rotate(190deg) + saturate(1.1) maps
+  // it to a friendly blue while keeping skin tones reasonable.
+  const filter =
+    tint === "blue" ? "hue-rotate(190deg) saturate(1.1)" : undefined;
+
   return (
     <div
       className={className}
@@ -120,6 +132,7 @@ export const LottieShooter = ({
         height: "100%",
         pointerEvents: "none",
         transform: flipX ? "scaleX(-1)" : undefined,
+        filter,
       }}
       aria-hidden
     >
