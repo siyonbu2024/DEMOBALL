@@ -10,6 +10,7 @@ import { Ball } from "./svg/Ball";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
 import { LottieKeeper } from "./svg/LottieKeeper";
+import { LottieShooter } from "./svg/LottieShooter";
 import { Pitch } from "./svg/Pitch";
 import { Shooter } from "./svg/Shooter";
 
@@ -166,12 +167,31 @@ export const SlideKicker = ({ onLock, disabled = false }: Props) => {
           />
         )}
 
-        {/* Shooter character standing behind/beside the ball */}
-        <Shooter pose="idle" />
+        {/* Static SVG shooter hidden — Lottie overlay below renders the
+            animated idle pose. Kept in tree for layout parity. */}
+        <g style={{ opacity: 0 }}>
+          <Shooter pose="idle" />
+        </g>
 
         {/* Ball stays at start position — only flies during RevealOverlay */}
         <Ball cx={PLAY_AREA.ballStartX} cy={PLAY_AREA.ballStartY} r={BALL_R} />
       </svg>
+
+      {/* Lottie shooter — idle, anchored at the ball position. Same height
+          as the in-reveal shooter so the swap into RevealOverlay is seamless. */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          left: `${(PLAY_AREA.ballStartX / PLAY_AREA.width) * 100}%`,
+          top: `${((PLAY_AREA.height - 10) / PLAY_AREA.height) * 100}%`,
+          transform: "translate(-50%, -100%)",
+          height: `${(180 / PLAY_AREA.height) * 100}%`,
+          aspectRatio: `${252 / 388}`,
+          zIndex: 4,
+        }}
+      >
+        <LottieShooter variant="idle" />
+      </div>
 
       {/* Lottie keeper — idle, anchored to goal floor. 200 viewBox units
           matches the size used in TapKeeper and RevealOverlay. */}

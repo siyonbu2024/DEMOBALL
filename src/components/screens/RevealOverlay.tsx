@@ -222,9 +222,7 @@ function RevealStage({
             />
           </motion.div>
 
-          {/* Lottie shooter — plays the full windup→kick→follow-through arc.
-              Positioned so feet sit just below the goal in the run-up area.
-              Sized by HEIGHT in viewBox units, mirroring the static Shooter. */}
+          {/* Lottie shooter — plays the full windup→kick→follow-through arc. */}
           <div
             className="absolute pointer-events-none"
             style={{
@@ -236,7 +234,7 @@ function RevealStage({
               zIndex: 4,
             }}
           >
-            <LottieShooter />
+            <LottieShooter variant="shooting" />
           </div>
 
           {/* Ball flight — DOM overlay so % positions match SVG viewBox exactly */}

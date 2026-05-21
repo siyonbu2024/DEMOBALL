@@ -4,40 +4,63 @@ import { useEffect, useRef, useState } from "react";
 import type { LottieRefCurrentProps } from "lottie-react";
 
 /**
- * Lottie-driven shooter animation. Source: /Shooter_Shooting.json (252×388,
- * 60fps, ~87 frames). Plays the windup → kick → follow-through arc.
+ * Lottie-driven shooter animation.
  *
- * Fills 100% of its parent — caller controls size via the wrapper.
+ * Variants map to JSON files under /public:
+ *   - "idle"     → /Shooter_Idle.json      (252 × 388) — loop
+ *   - "shooting" → /Shooter_Shooting.json  (252 × 388) — one-shot
+ *
+ * Component fills 100% of its parent — caller controls size via wrapper.
  */
 
+export type ShooterAnim = "idle" | "shooting";
+
+const SOURCE: Record<ShooterAnim, { src: string }> = {
+  idle:     { src: "/Shooter_Idle.json" },
+  shooting: { src: "/Shooter_Shooting.json" },
+};
+
+const cache = new Map<string, Promise<unknown>>();
+function loadJson(src: string): Promise<unknown> {
+  if (!cache.has(src)) {
+    cache.set(src, fetch(src).then((r) => r.json()));
+  }
+  return cache.get(src)!;
+}
+
+/** Prewarm all variants the first time any LottieShooter mounts. */
+let prewarmed = false;
+function prewarmAllVariants(): void {
+  if (prewarmed || typeof window === "undefined") return;
+  prewarmed = true;
+  for (const variant of Object.keys(SOURCE) as ShooterAnim[]) {
+    void loadJson(SOURCE[variant].src);
+  }
+}
+
 interface Props {
-  /** Loop the animation? Defaults to false (one-shot for the kick). */
+  variant?: ShooterAnim;
+  /** Loop the animation. Defaults: idle loops, shooting one-shots. */
   loop?: boolean;
-  /** Pause the playhead — useful for previewing/debugging. */
+  /** Pause the playhead. */
   paused?: boolean;
-  /** Called once the animation reaches its last frame. */
+  /** Called once the animation reaches its last frame (one-shot mode). */
   onComplete?: () => void;
   className?: string;
 }
 
-const SRC = "/Shooter_Shooting.json";
-
-let cachedPromise: Promise<unknown> | null = null;
-function loadJson(): Promise<unknown> {
-  if (!cachedPromise) {
-    cachedPromise = fetch(SRC).then((r) => r.json());
-  }
-  return cachedPromise;
-}
-
 export const LottieShooter = ({
-  loop = false,
+  variant = "idle",
+  loop = variant === "idle",
   paused = false,
   onComplete,
   className = "",
 }: Props) => {
   const lottieRef = useRef<LottieRefCurrentProps>(null);
-  const [animationData, setAnimationData] = useState<unknown | null>(null);
+  const [displayed, setDisplayed] = useState<{
+    src: string;
+    data: unknown;
+  } | null>(null);
   const [LottieComponent, setLottieComponent] = useState<React.ComponentType<{
     animationData: unknown;
     loop: boolean;
@@ -47,29 +70,38 @@ export const LottieShooter = ({
     rendererSettings?: { preserveAspectRatio: string };
   }> | null>(null);
 
+  const { src } = SOURCE[variant];
+
+  // Warm all variants once so subsequent swaps are instant.
+  useEffect(() => {
+    prewarmAllVariants();
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([import("lottie-react"), loadJson()])
+    Promise.all([import("lottie-react"), loadJson(src)])
       .then(([mod, json]) => {
         if (cancelled) return;
         setLottieComponent(() => mod.default);
-        setAnimationData(json);
+        setDisplayed({ src, data: json });
       })
       .catch((err) => {
-        console.error("Failed to load Lottie shooter:", err);
+        console.error(`Failed to load Lottie shooter (${src}):`, err);
       });
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [src]);
 
   useEffect(() => {
     if (!lottieRef.current) return;
     if (paused) lottieRef.current.pause();
     else lottieRef.current.play();
-  }, [paused, animationData]);
+  }, [paused, displayed]);
+
+  const animationData = displayed?.data ?? null;
 
   if (!LottieComponent || !animationData) {
     return (
