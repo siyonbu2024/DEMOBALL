@@ -74,12 +74,12 @@ export const RoundPlay = () => {
       <div className="text-center text-white/80 text-xs py-2 px-4">
         {humanIsKicker
           ? pendingKickerChoice === null
-            ? "ลากบอลไปยิง"
+            ? "แตะช่องเป้าหมาย"
             : pendingKeeperChoice === null
-            ? "AI กำลังคิด…"
-            : "AI ล็อค!"
+            ? "คู่ต่อสู้กำลังเซฟ…"
+            : "คู่ต่อสู้ล็อค!"
           : pendingKickerChoice === null
-          ? "AI กำลังเล็ง…"
+          ? "คู่ต่อสู้กำลังเล็ง…"
           : pendingKeeperChoice === null
           ? "ป้องกัน — แตะช่อง!"
           : "ล็อคแล้ว"}

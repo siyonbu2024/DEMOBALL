@@ -9,6 +9,7 @@ import { PLAY_AREA, zoneRect } from "@/lib/zone-geometry";
 import { Goal } from "./svg/Goal";
 import { Keeper } from "./svg/Keeper";
 import { LottieKeeper } from "./svg/LottieKeeper";
+import { LottieShooter } from "./svg/LottieShooter";
 import { Pitch } from "./svg/Pitch";
 
 interface Props {
@@ -127,6 +128,22 @@ export const TapKeeper = ({ onLock, disabled = false, revealZone = null }: Props
           <LottieKeeper loop />
         </div>
       )}
+
+      {/* Opponent shooter — idle, mirrors the SlideKicker layout so both
+          rounds share the same scene composition. */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          left: `${(PLAY_AREA.ballStartX / PLAY_AREA.width) * 100}%`,
+          top: `${((PLAY_AREA.height - 10) / PLAY_AREA.height) * 100}%`,
+          transform: "translate(-50%, -100%)",
+          height: `${(180 / PLAY_AREA.height) * 100}%`,
+          aspectRatio: `${252 / 388}`,
+          zIndex: 4,
+        }}
+      >
+        <LottieShooter variant="idle" />
+      </div>
 
       {/* Tappable zone overlay (positioned in % over the SVG) */}
       <div className="absolute inset-0">

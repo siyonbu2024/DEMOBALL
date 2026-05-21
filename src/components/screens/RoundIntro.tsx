@@ -26,7 +26,7 @@ export const RoundIntro = () => {
         {isSuddenDeath ? "Sudden Death" : `Round ${roundsPlayed + 1} / 10`}
       </div>
       <div className="text-4xl font-black text-white">
-        {youKick ? "คุณยิง" : "AI ยิง"}
+        {youKick ? "คุณยิง" : "ฝั่งคุณกัน"}
       </div>
     </div>
   );
